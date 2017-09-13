@@ -1,0 +1,346 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{url}
+
+
+\title{Práctica 1 - Interfaces Gráficas de Usuaria con Gtk+ y Python}
+\author{Interfaces Persona Máquina}
+\date{18/9/2017 -- 13/10/2018}
+
+
+
+\begin{document}
+
+
+\maketitle
+
+\renewcommand{\abstractname}{Objetivos}
+\begin{abstract}
+  Aplicar los conocimientos adquiridos sobre el desarrollo de
+  interfaces gráficas de usuaria durante el desarrollo de una
+  aplicación gráfica de escritorio. Dicha aplicación se implementará
+  utilizando el lenguaje de programación Python y la librería gráfica
+  Gtk+.
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Descripción del trabajo}
+
+Al llegar a tu nuevo trabajo te encuentras una aplicación desarrollada
+por el equipo que acaban de despedir. La aplicación es el mítico
+gestor de una lista de tareas donde puedes añadir tareas pendientes de
+realizar, indicar su fecha de finalización, marcar las que ya se han
+realizado, etc.
+
+Tu jefa te ha encargado que rehagas la aplicación porque se ha dado
+cuenta que presenta muchos fallos. El diseño de la interface es muy
+pobre y presenta muchas carencias, y el diseño software es,
+simplemente, inexistente.
+
+Como tu jefa confía en ti y sabe que vas a realizar un buen trabajo,
+también te ha encargado que después de rehacer la aplicación, le
+añadas las funcionalidades que están pendientes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Cómo realizar la práctica}
+\label{sec:como-realizar}
+
+En los siguientes apartados se describen las tareas que debes llevar a
+cabo. Si deseas que tu trabajo reciba una valoración positiva es
+necesario que te ciñas a las siguientes indicaciones:
+
+\begin{itemize}
+\item Las tareas deben realizarse en el orden en que se presentan en
+  el enunciado de la práctica.
+
+  Por supuesto, es posible un desarrollo iterativo en el que se
+  corrigen errores que no se hayan detectado durante la desarrollo de
+  tareas anteriores.
+
+  Es cierto que el orden propuesto no encaja con una metodología
+  actual de ingeniería del software, sin embargo, no debemos olvidar
+  el objetivo de la práctica, cada tarea esta pensada para reforzar el
+  aprendizaje de aspectos concretos de la materia y, para que este
+  aprendizaje sea lo más efectivo posible, deben realizarse en el
+  orden estipulado.
+
+\item No se evaluará ningún material que no esté en el
+  repositorio. Esto incluye el código fuente, pero también la
+  documentación, diagramas, datos, ... Por tanto, no olvides incluir
+  en el repositorio todos los resultados de cada una de las tareas.
+
+  Tampoco olvides que estás trabajando con un sistema de control de
+  versiones distribuido. Trabaja lo más posible contra tu repositorio
+  local, y usa los repositorios para sincronizar tu trabajo con el de
+  tu compañero de prácticas. Y no tengas miedo de hacer commits, no
+  racanees, el sistema se encarga de calcular y almacenar sólo las
+  diferencias entre una versión y la siguiente para optimizar el
+  espacio.
+
+\item Las ramas de versiones del repositorio se usarán para tomar
+  decisiones a la hora de evaluar la práctica.  A continuación te
+  mostramos unos ejemplos en los que la práctica se considera no apta:
+
+  \begin{itemize}
+  \item El orden de las versiones no es el indicado para las tareas en
+    el enunciado de la práctica.
+  \item Todas las versiones (commits) se realizaron el último día.
+  \end{itemize} 
+  
+\item El repositorio de referencia para la evaluación de la práctica
+  es el que se encuentra en los servidores proporcionados por el
+  Cecafi. Asegúrate de que su contenido este completo.
+
+  Recuerda que en cualquier momento puedes clonar el repositorio para
+  comprobar su contenido. Por ejemplo, una vez clonado \texttt{git
+    reset --hard sprint1} nos ``resetea'' nuestra copia de trabajo
+  hasta la versión que habíamos etiquetado como \texttt{sprint1}.
+
+\item EL proyecto que contiene el repositorio en el servidor del
+  Cecafi se tiene que llamar \emph{exactamente}: \texttt{ipm-p1}.
+\end{itemize}
+
+
+\subsection{Requisitos no funcionales}
+\begin{itemize}
+\item La implementación se realizará con python y GTK+. Ambas en su
+  versión 3.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Descripción de la aplicación}
+
+La aplicación es la típica \textit{TODO List} que gestiona una lista
+de tareas pendientes y realizadas. Cada tarea viene dada por una
+descripción textual, una fecha límite y una variable que indica si se
+ha realizado o no. Los casos de uso soportados son los siguientes:
+
+\begin{itemize}
+ \item Añadir una tarea a la lista de tareas
+ \item Eliminar una tarea de la lista de tareas
+ \item Editar los datos de una tarea
+ \item Marcar/desmarcar una tarea como hecha
+ \item Ordenar las tareas 
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Tareas a realizar}
+Los siguientes apartados describen las \emph{tareas} que debes
+realizar según la planificación establecida.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Reingeniería. Documentar}
+\label{subsec:documentar}
+
+A los defectos de la interface actual se añade el hecho de que no está
+documentada, así que comenzaremos por corregir esta carencia.
+
+\begin{enumerate}
+\item Documenta la interface actual. Documenta las ventanas y
+  diálogos existentes mediante \textit{wireframes}, y el flujo de
+  todas las acciones posibles.
+
+  Se exhaustivo, no te limites al comportamiento esperado de la
+  interface, documenta también las situaciones de error aunque no se
+  traten en la implementación inicial. Por ejemplo: pulso el botón
+  'Eliminar' sin haber seleccionado una tarea.
+\end{enumerate}
+
+A la última versión que se corresponda con la realización de este
+apartado asígnale la etiqueta \texttt{task1}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Reingeniería. Diseño software}
+
+Dado que el diseño software es inexistente, pasamos a corregirlo en
+este apartado para facilitar la realización de las siguientes tareas.
+
+\begin{enumerate}
+\item Estudia el código existente. Difícilmente podrás hacer ningún
+  cambio si no lo entiendes.
+
+\item Realiza un diseño software de la aplicación aplicando el patrón
+  \emph{Model View Controller}.
+
+  A estas alturas de la carrera no hace falta que te lo diga, pero ya
+  tú sabes, usa diagramas UML para documentar el diseño.
+
+\item Reimplementa la aplicación siguiendo el diseño que acabas de realizar.
+\end{enumerate}
+
+A la última versión que se corresponda con la realización de este
+apartado asígnale la etiqueta \texttt{task2}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Reingeniería. Diseño e implementación}
+
+Llegados a este punto, procede a subsanar los fallos de la
+interface. Corrige el diseño de la misma e implementa los cambios.
+
+Los principales aspectos a tratar son los siguientes:
+
+\begin{itemize}
+\item Gestionar los errores. Recuerda que ya te fijaste en ellos en la
+  tarea del apartado~\ref{subsec:documentar}.
+
+\item Mejora la eficiencia del uso de la interface. En la mayor parte
+  de los casos, esto implicará reducir el número de pasos necesarios
+  para realizar un caso de uso. Recuerda que tienes diagramas de
+  flujo en la documentación de la interface donde este aspecto se ve
+  claramente.
+
+\item Dado que la interface se implementa con la librería Gtk+, su
+  entorno de ejecución natural es el escritorio Gnome. Por tanto,
+  debes adecuar el diseño de la interface a las Gnome
+  HIG\footnote{\url{https://developer.gnome.org/hig/stable/}}.
+
+  Crea un documento de texto con los apartados de cada una de las
+  guías que aplica a la interface de la aplicación. En los casos en
+  que sea necesario cambia el diseño para que se ajuste a las guías.
+\end{itemize}
+
+Durante la realización de este apartado, no te sorprendas por el hecho
+de que la intersección de los items propuestos no está vacía. Dicho de
+otra forma, para cumplir alguna de las guías tendrás que mejorar
+algunos aspectos del uso de la interface o gestionar mejor los
+errores.
+
+Respecto al control de versiones, dentro de este apartado \emph{no
+  hagas commits que incluyan más de un cambio en la interface}.
+
+A la última versión que se corresponda con la realización de este
+apartado asígnale la etiqueta \texttt{task3}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Nuevo caso de uso}
+
+En este paso, debes añadir un nuevo caso de uso a la aplicación:
+
+\begin{itemize}
+\item Sincronizar la lista de tareas con un servidor remoto.
+\end{itemize}
+
+Para simplificar el desarrollo, el servidor remoto será simulado
+mediante una función que recibe una lista de tareas, como efecto
+colateral simula la sincronización a través de un servicio de red y
+devuelve un valor indicando si la operación tuvo éxito o si se produjo
+algún error.
+
+Dada la naturaleza de las operaciones de red, debes tener especial
+cuidado con las cuestiones relativas a la usabilidad como no
+interrumpir el funcionamiento de la interface o proporcionar el
+\textit{feedback} adecuado.
+
+
+A la última versión que se corresponda con la realización de este
+apartado asígnale la etiqueta \texttt{task4}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Internacionalización}
+
+Finalmente, la última tarea será internacionalizar la aplicación para
+que se ajuste automáticamente a la configuración de entorno local
+(\textit{locale}) del usuario.
+
+En concreto, se deben adaptar el idioma del texto de la interface y el
+formato de las fechas.
+
+A la última versión que se corresponda con la realización de este
+apartado asígnale la etiqueta \texttt{task5}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Evaluación de la práctica}
+
+Una vez terminada la práctica tienes que hacer una presentación de la
+misma al profesor para que la evalúe.
+
+Para evaluar la práctica, el profesor seguirá los siguientes
+criterios:
+
+\begin{itemize}
+\item Si el repositorio no cumple con lo establecido en la
+  sección~\ref{sec:como-realizar}, la práctica se evaluará como
+  \emph{no apta}, nota numérica 0.
+
+\item Si alguno de los integrantes del grupo, por su desconocimiento
+  de la práctica, muestra no haber participado en la realización de la
+  misma, esa persona recibirá una evaluación en la práctica de
+  \emph{no apta}.
+
+\item Cada una de las tareas que conforma la práctica se evaluarán de
+  la siguiente manera:
+
+  \begin{itemize}
+  \item \texttt{task1}
+    \begin{itemize}
+    \item Hasta 0,75 puntos si se han documentado correctamente todas
+      las ventanas y diálogos.
+    \item Hasta 0,5 puntos si se han documentado correctamente todos
+      los flujos de las acciones cuando no hay errores.
+    \item Hasta 0,75 puntos si se han documentado correctamente todos
+      los flujos de las acciones cuando hay errores.
+    \end{itemize}
+  
+  \item \texttt{task2}
+
+    \begin{itemize}
+    \item Hasta 0,75 puntos si el diseño sigue el estándar UML.
+    \item Hasta 0,75 puntos si el diseño sigue el patrón MVC.
+    \item Hasta 0,5 puntos si la implementación se corresponde con el
+      diseño.
+    \item -0,5 puntos si el diseño no es anterior a la
+      implementación\footnote{Recuerda que estos aspectos se verifican
+        con las versiones del repositorio.}.
+    \end{itemize}
+
+  \item \texttt{task3}
+
+    \begin{itemize}
+    \item Hasta 1 punto si la interface gestiona los errores.
+    \item Hasta 0,75 puntos si se ha mejorado la eficiencia de uso de
+      la interface.
+    \item Hasta 0,75 si la interface sigue las Gnome HIG.
+    \end{itemize}
+
+  \item \texttt{task4}
+
+    \begin{itemize}
+    \item Hasta 2 puntos si la sincronización no bloquea la interface.
+    \item Hasta 0,5 puntos si se proporciona un feedback adecuado.
+    \end{itemize}
+
+  \item \texttt{task5}
+
+    \begin{itemize}
+    \item Hasta 0,5 puntos si los textos de la interface se adaptan
+      al idioma de la usuaria.
+    \item Hasta 0,5 puntos si las fechas se adaptan al entorno local
+      de la usuaria.
+    \end{itemize}
+  \end{itemize}
+
+\item El resultado de evaluar las tareas de la práctica constituye la
+  nota provisional de la misma. A continuación, si procede, se aplican
+  las penalizaciones por finalizar la práctica fuera de plazo.
+
+  \begin{itemize}
+  \item Si la práctica se finalizó dentro del plazo establecido, esta
+    nota se convierte en la nota final.
+  \item Si la práctica se finalizó fuera del plazo establecido:
+    \begin{itemize}
+    \item Cuando finaliza con menos de un semana de retraso, la nota
+      final es el mínimo entre 8,99 y la nota provisional.
+    \item Cuando finaliza con más de un semana de retraso, la nota
+      final es el mínimo entre 6,99 y la nota provisional.
+    \end{itemize}
+  \end{itemize}
+
+\end{itemize}
+
+
+\end{document}
