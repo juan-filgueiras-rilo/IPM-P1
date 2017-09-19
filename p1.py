@@ -2,7 +2,7 @@
 
 """ Código base para la práctica de IPM. Existen numerosos fallos de diseño que deben ser corregidos."""
 
-__author__     = "David Cabrero Souto"
+__author__     = "Guillermo Martín Villar, Juan Luis Filgueiras Rilo"
 __copyright__  = "GNU General Public Licencse v2"
 
 
