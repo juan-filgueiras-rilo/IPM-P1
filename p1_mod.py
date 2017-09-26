@@ -12,6 +12,17 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject
 
+class TaskList_View:
+    def __init__(self):
+        pass
+
+class TaskList_Controller:
+    def __init__(self):
+        pass
+
+class TaskList_Model:
+    def __init__(self):
+        pass
 
 def on_button_salir_clicked(widget):
     dialog = Gtk.MessageDialog(widget.get_toplevel(), 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "¿ Quieres detener esta acción ?")
