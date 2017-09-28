@@ -27,19 +27,19 @@ class TaskList_Controller:
         self._model = model
 
     def on_button_añadir_clicked(self, widget, tree):
-        _data = self._view.run_dialog_añadir_editar("Añadir tarea", widget.get_toplevel())
-        if _data != None:
-            tree.get_model().append(_data)
+        data = self._view.run_dialog_añadir_editar("Añadir tarea", widget.get_toplevel())
+        if data != None:
+            tree.get_model().append(data)
 
     def on_button_editar_clicked(self, widget, tree):
         selection = tree.get_selection()
         model, treeiter = selection.get_selected()
         if treeiter != None:
-            _data = self._view.run_dialog_añadir_editar("Editar tarea", widget.get_toplevel(), model[treeiter])
-            if _data != None:
-                model.set(treeiter, 0, _data[0])
-                model.set(treeiter, 1, _data[1])
-                model.set(treeiter, 2, _data[2])
+            data = self._view.run_dialog_añadir_editar("Editar tarea", widget.get_toplevel(), model[treeiter])
+            if data != None:
+                model.set(treeiter, 0, data[0])
+                model.set(treeiter, 1, data[1])
+                model.set(treeiter, 2, data[2])
             
     def on_button_eliminar_clicked(self, widget, tree):
         selection = tree.get_selection()
@@ -155,7 +155,6 @@ class TaskList_View:
                 pass
         dialog.destroy()
         return data
-        
 
     def connect(self, controller):
         self._exit_button.connect('clicked', controller.on_button_salir_clicked)
@@ -197,10 +196,10 @@ class TaskList_Model:
 '''
 A clasificar
 '''        
-
+    
 def fecha_cell_data_func(column, renderer, model, treeiter, data):
-    fecha = model[treeiter][1]
-    renderer.set_property('text', fecha.strftime("%x"))
+       fecha = model[treeiter][1]
+       renderer.set_property('text', fecha.strftime("%x"))
 
 
 def compare_fecha(model, treeiter1, treeiter2, user_data):
@@ -209,7 +208,7 @@ def compare_fecha(model, treeiter1, treeiter2, user_data):
     if model[treeiter1][1] > model[treeiter2][1]:
         return 1
     return 0
-    
+
 if __name__ == '__main__':
 
     # Workarround para el control-c https://bugzilla.gnome.org/show_bug.cgi?id=622084#c4
