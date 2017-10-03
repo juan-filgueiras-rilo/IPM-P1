@@ -22,32 +22,32 @@ class TaskList_Controller:
         self._view = TaskList_View()
         self._view.connect(self)
 
-
     def set_model(self, model):
         self._model = model
 
-    def on_button_añadir_clicked(self, widget, tree):
-        data = self._view.run_dialog_añadir_editar("Añadir tarea", widget.get_toplevel())
+    def on_button_add_clicked(self, widget, tree):
+        data = self._view.run_dialog_add_edit("Añadir tarea", widget.get_toplevel())
         if data != None:
             tree.get_model().append(data)
 
-    def on_button_editar_clicked(self, widget, tree):
+    def on_button_edit_clicked(self, widget, tree):
         selection = tree.get_selection()
         model, treeiter = selection.get_selected()
         if treeiter != None:
-            data = self._view.run_dialog_añadir_editar("Editar tarea", widget.get_toplevel(), model[treeiter])
+            data = self._view.run_dialog_add_edit("Editar tarea", widget.get_toplevel(), model[treeiter])
             if data != None:
                 model.set(treeiter, 0, data[0])
                 model.set(treeiter, 1, data[1])
                 model.set(treeiter, 2, data[2])
             
-    def on_button_eliminar_clicked(self, widget, tree):
+    def on_button_remove_clicked(self, widget, tree):
         selection = tree.get_selection()
         model, treeiter = selection.get_selected()
+        #print(model,treeiter)
         if treeiter != None:
             model.remove(treeiter) 
 
-    def on_button_salir_clicked(self, widget):
+    def on_button_exit_clicked(self, widget):
         #self._view.run_dialog()?
         dialog = Gtk.MessageDialog(widget.get_toplevel(), 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "¿ Quieres detener esta acción ?")
         dialog.format_secondary_text("Si no la detienes, el programa terminará")
@@ -61,6 +61,18 @@ Vista
 
 class TaskList_View:
     def __init__(self):
+        
+        def date_cell_data_func(column, renderer, model, treeiter, data):
+            fecha = model[treeiter][1]
+            renderer.set_property('text', fecha.strftime("%x"))
+
+        def compare_date(model, treeiter1, treeiter2, user_data):
+            if model[treeiter1][1] < model[treeiter2][1]:
+                return -1
+            if model[treeiter1][1] > model[treeiter2][1]:
+                return 1
+            return 0
+
         self._win = Gtk.Window(title="Práctica 1 -- IPM 17/18")
         self._win.connect("delete-event", Gtk.main_quit)
         
@@ -100,10 +112,10 @@ class TaskList_View:
         column.set_sort_column_id(0)
         renderer = Gtk.CellRendererText()
         column = Gtk.TreeViewColumn("Fecha", renderer)
-        column.set_cell_data_func(renderer, fecha_cell_data_func)
+        column.set_cell_data_func(renderer, date_cell_data_func)
         self.tree.append_column(column)
         column.set_sort_column_id(1)
-        store.set_sort_func(1, compare_fecha, None)
+        store.set_sort_func(1, compare_date, None)
         renderer = Gtk.CellRendererToggle()
         column = Gtk.TreeViewColumn("Hecho", renderer, active=2)
         self.tree.append_column(column)
@@ -128,7 +140,7 @@ class TaskList_View:
         #GLib.idle_add(welcome, self._win)
         self._win.show_all()
 
-    def run_dialog_añadir_editar(self, title, parent, data=None):
+    def run_dialog_add_edit(self, title, parent, data=None):
         dialog = Gtk.Dialog(title, parent, Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK))
         box = dialog.get_content_area()
         grid = Gtk.Grid()
@@ -157,11 +169,10 @@ class TaskList_View:
         return data
 
     def connect(self, controller):
-        self._exit_button.connect('clicked', controller.on_button_salir_clicked)
-        self._add_button.connect('clicked', controller.on_button_añadir_clicked, self.tree)
-        self._delete_button.connect('clicked', controller.on_button_eliminar_clicked, self.tree)
-        self._edit_button.connect('clicked', controller.on_button_editar_clicked, self.tree)
-
+        self._exit_button.connect('clicked', controller.on_button_exit_clicked)
+        self._add_button.connect('clicked', controller.on_button_add_clicked, self.tree)
+        self._delete_button.connect('clicked', controller.on_button_remove_clicked, self.tree)
+        self._edit_button.connect('clicked', controller.on_button_edit_clicked, self.tree)
 
     # def welcome(window):
     #     welcome = Gtk.Dialog("El mítico gestor de tareas", window, 0, 
@@ -193,21 +204,9 @@ class TaskList_Model:
     def __init__(self):
         pass
 
-'''
-A clasificar
-'''        
-    
-def fecha_cell_data_func(column, renderer, model, treeiter, data):
-       fecha = model[treeiter][1]
-       renderer.set_property('text', fecha.strftime("%x"))
+    def add():
+        pass
 
-
-def compare_fecha(model, treeiter1, treeiter2, user_data):
-    if model[treeiter1][1] < model[treeiter2][1]:
-        return -1
-    if model[treeiter1][1] > model[treeiter2][1]:
-        return 1
-    return 0
 
 if __name__ == '__main__':
 
