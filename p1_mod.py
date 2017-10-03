@@ -27,8 +27,9 @@ class TaskList_Controller:
 
     def on_button_add_clicked(self, widget, tree):
         data = self._view.run_dialog_add_edit("Añadir tarea", widget.get_toplevel())
-        if data != None:
-            tree.get_model().append(data)
+        task_id = self._model.add(data)
+        if task_id != None:
+            self._view.add(task_id,data)
 
     def on_button_edit_clicked(self, widget, tree):
         selection = tree.get_selection()
@@ -63,13 +64,13 @@ class TaskList_View:
     def __init__(self):
         
         def date_cell_data_func(column, renderer, model, treeiter, data):
-            fecha = model[treeiter][1]
+            fecha = model[treeiter][2]
             renderer.set_property('text', fecha.strftime("%x"))
 
         def compare_date(model, treeiter1, treeiter2, user_data):
-            if model[treeiter1][1] < model[treeiter2][1]:
+            if model[treeiter1][2] < model[treeiter2][2]:
                 return -1
-            if model[treeiter1][1] > model[treeiter2][1]:
+            if model[treeiter1][2] > model[treeiter2][2]:
                 return 1
             return 0
 
@@ -77,50 +78,46 @@ class TaskList_View:
         self._win.connect("delete-event", Gtk.main_quit)
         
         # El código sigue los ejemplos del tuto: https://python-gtk-3-tutorial.readthedocs.io/en/latest/index.html
-        
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
         self._win.add(box)
-        
         #
         # # 
         #
-        
         self._exit_button = Gtk.Button(label="Salir")
         box.pack_end(self._exit_button, True, True, 0)
-
         #
         # #
         #
-        
-        store = Gtk.ListStore(str, GObject.TYPE_PYOBJECT, bool)
-        store.append(["Llevar coche al taller", date.today(), False])
-        store.append(["Lavar el coche", date(2017, 8, 1), False])
-        store.append(["Pagar el seguro", date(2017,1,1), False])
-        store.append(["Arreglar mando garaje", date.today(), False])
-        store.append(["Recoger ropa del tinte", date.today(), False])
-        store.append(["Regalo cumpleaños Nico", date(2018,1,1), False])
-        store.append(["Devolver libro a la biblioteca", date(2018,2,12), True])
-        store.append(["Ordenar el congelador", date(2017,9,12), False])
-        store.append(["Lavar las cortinas", date(2017,10,1), False])
-        store.append(["Organizar el cajón de los mandos", date(2017,10,5), False])
-        store.append(["Poner flores en las jardineras", date.today(), False])
+        self.store = Gtk.ListStore(int, str, GObject.TYPE_PYOBJECT, bool)
+        self.store.append([0,"Llevar coche al taller", date.today(), False])
+        self.store.append([1,"Lavar el coche", date(2017, 8, 1), False])
+        # store.append(["Pagar el seguro", date(2017,1,1), False])
+        # store.append(["Arreglar mando garaje", date.today(), False])
+        # store.append(["Recoger ropa del tinte", date.today(), False])
+        # store.append(["Regalo cumpleaños Nico", date(2018,1,1), False])
+        # store.append(["Devolver libro a la biblioteca", date(2018,2,12), True])
+        # store.append(["Ordenar el congelador", date(2017,9,12), False])
+        # store.append(["Lavar las cortinas", date(2017,10,1), False])
+        # store.append(["Organizar el cajón de los mandos", date(2017,10,5), False])
+        # store.append(["Poner flores en las jardineras", date.today(), False])
 
-        self.tree = Gtk.TreeView(store)
+        #se crea un treeview sobre la lista store
+        self.tree = Gtk.TreeView(self.store)
         renderer = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn("Tarea", renderer, text=0)
+        column = Gtk.TreeViewColumn("Tarea", renderer, text=1)
         self.tree.append_column(column)
-        column.set_sort_column_id(0)
+        column.set_sort_column_id(1)
         renderer = Gtk.CellRendererText()
         column = Gtk.TreeViewColumn("Fecha", renderer)
         column.set_cell_data_func(renderer, date_cell_data_func)
         self.tree.append_column(column)
-        column.set_sort_column_id(1)
-        store.set_sort_func(1, compare_date, None)
+        column.set_sort_column_id(2)
+        self.store.set_sort_func(2, compare_date, None)
         renderer = Gtk.CellRendererToggle()
-        column = Gtk.TreeViewColumn("Hecho", renderer, active=2)
+        column = Gtk.TreeViewColumn("Hecho", renderer, active=3)
         self.tree.append_column(column)
         box.pack_end(self.tree, True, True, 0)
-        column.set_sort_column_id(2)
+        column.set_sort_column_id(3)
 
         #
         # #
@@ -139,6 +136,12 @@ class TaskList_View:
         box2.pack_end(self._edit_button, True, True, 0)
         #GLib.idle_add(welcome, self._win)
         self._win.show_all()
+
+    def connect(self, controller):
+        self._exit_button.connect('clicked', controller.on_button_exit_clicked)
+        self._add_button.connect('clicked', controller.on_button_add_clicked, self.tree)
+        self._delete_button.connect('clicked', controller.on_button_remove_clicked, self.tree)
+        self._edit_button.connect('clicked', controller.on_button_edit_clicked, self.tree)    
 
     def run_dialog_add_edit(self, title, parent, data=None):
         dialog = Gtk.Dialog(title, parent, Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK))
@@ -168,11 +171,17 @@ class TaskList_View:
         dialog.destroy()
         return data
 
-    def connect(self, controller):
-        self._exit_button.connect('clicked', controller.on_button_exit_clicked)
-        self._add_button.connect('clicked', controller.on_button_add_clicked, self.tree)
-        self._delete_button.connect('clicked', controller.on_button_remove_clicked, self.tree)
-        self._edit_button.connect('clicked', controller.on_button_edit_clicked, self.tree)
+    def add(self, task_id, data):
+        data = list(data)
+        data.insert(0,task_id)
+        data = tuple(data)
+        self.store.append(data)
+
+    def edit(self, id, data):
+        pass
+
+    def remove(self, id):
+        pass
 
     # def welcome(window):
     #     welcome = Gtk.Dialog("El mítico gestor de tareas", window, 0, 
@@ -201,11 +210,37 @@ Modelo
 '''
 
 class TaskList_Model:
-    def __init__(self):
-        pass
 
-    def add():
-        pass
+    def __init__(self):
+        self.ID = 0
+        self.model_task_list = []
+
+    #
+    ##   add asigna un ID de tarea único a la lista de 
+    ##   tareas y la concatena en la lista del modelo devolviendo el ID
+    ##   Si la informacion es nula, simplemente devuelve -1 a modo de error
+    #
+
+    def add(self, data):
+        done = -1
+        if data != None:
+            data = list(data)
+            data.insert(0, self.ID)
+            data = tuple(data)
+            self.model_task_list.append(data)
+            done = self.ID
+            self.ID += 1
+        return done
+
+    def edit(self, data):
+        done = -1
+
+        return done
+
+    def remove(self, task_id):
+        done = -1
+
+        return done
 
 
 if __name__ == '__main__':
