@@ -35,9 +35,10 @@ class TaskList_Controller:
         task = self._view.get_task()
         if task != None:
             data = self._view.run_dialog_add_edit("Editar tarea", widget.get_toplevel(),task)
-            ok = self._model.edit(task[0],data)
-            if ok != -1:
-                self._view.edit(task[0],data)
+            if data != None:
+                ok = self._model.edit(task[0],data)
+                if ok != -1:
+                    self._view.edit(task[0],data)
             
     def on_button_remove_clicked(self, widget):
         task = self._view.get_task()
@@ -82,17 +83,17 @@ class TaskList_View:
         # #
         #
         self.store = Gtk.ListStore(int, str, GObject.TYPE_PYOBJECT, bool)
-        # self.store.append([100,"Llevar coche al taller", date.today(), False])
-        # self.store.append([101,"Lavar el coche", date(2017, 8, 1), False])
-        # self.store.append(["Pagar el seguro", date(2017,1,1), False])
-        # self.store.append(["Arreglar mando garaje", date.today(), False])
-        # self.store.append(["Recoger ropa del tinte", date.today(), False])
-        # self.store.append(["Regalo cumpleaños Nico", date(2018,1,1), False])
-        # self.store.append(["Devolver libro a la biblioteca", date(2018,2,12), True])
-        # self.store.append(["Ordenar el congelador", date(2017,9,12), False])
-        # self.store.append(["Lavar las cortinas", date(2017,10,1), False])
-        # self.store.append(["Organizar el cajón de los mandos", date(2017,10,5), False])
-        # self.store.append(["Poner flores en las jardineras", date.today(), False])
+        self.store.append([100,"Llevar coche al taller", date.today(), False])
+        self.store.append([101,"Lavar el coche", date(2017, 8, 1), False])
+        self.store.append([102,"Pagar el seguro", date(2017,1,1), False])
+        self.store.append([103,"Arreglar mando garaje", date.today(), False])
+        self.store.append([104,"Recoger ropa del tinte", date.today(), False])
+        self.store.append([105,"Regalo cumpleaños Nico", date(2018,1,1), False])
+        self.store.append([106,"Devolver libro a la biblioteca", date(2018,2,12), True])
+        self.store.append([107,"Ordenar el congelador", date(2017,9,12), False])
+        self.store.append([108,"Lavar las cortinas", date(2017,10,1), False])
+        self.store.append([109,"Organizar el cajón de los mandos", date(2017,10,5), False])
+        self.store.append([110,"Poner flores en las jardineras", date.today(), False])
 
         #se crea un treeview sobre la lista store
         self.tree = Gtk.TreeView(self.store)
@@ -228,6 +229,17 @@ class TaskList_Model:
     def __init__(self):
         self.ID = 0
         self.model_task_list = []
+        self.model_task_list.append([100,"Llevar coche al taller", date.today(), False])
+        self.model_task_list.append([101,"Lavar el coche", date(2017, 8, 1), False])
+        self.model_task_list.append([102,"Pagar el seguro", date(2017,1,1), False])
+        self.model_task_list.append([103,"Arreglar mando garaje", date.today(), False])
+        self.model_task_list.append([104,"Recoger ropa del tinte", date.today(), False])
+        self.model_task_list.append([105,"Regalo cumpleaños Nico", date(2018,1,1), False])
+        self.model_task_list.append([106,"Devolver libro a la biblioteca", date(2018,2,12), True])
+        self.model_task_list.append([107,"Ordenar el congelador", date(2017,9,12), False])
+        self.model_task_list.append([108,"Lavar las cortinas", date(2017,10,1), False])
+        self.model_task_list.append([109,"Organizar el cajón de los mandos", date(2017,10,5), False])
+        self.model_task_list.append([110,"Poner flores en las jardineras", date.today(), False])
 
     #
     ##   add asigna un ID de tarea único a la lista de 
