@@ -234,6 +234,24 @@ class TaskList_Model:
 
     def edit(self, data):
         done = -1
+        #cojo el ID para buscar si está ese elemento en la lista
+        tempID = data[0]
+        if (tempID in self.model_task_list):
+            #obtengo la posición de la lista donde está el elemento
+            #https://stackoverflow.com/questions/364621/how-to-get-items-position-in-a-list
+            [i for i,x in enumerate(self.model_task_list) if x[0] == tempID]
+            #[i for i,x in index(self.model_task_list) if x[0] == tempID]
+            #actualizo los datos de la posicion i
+            self.model_task_list[i][1] = data[1]
+            self.model_task_list[i][2] = data[2]
+            self.model_task_list[i][3] = data[3]
+            #probar list[i][1:3] = data[1:3]
+            done = tempID
+        return done
+
+
+
+
 
         return done
 
