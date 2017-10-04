@@ -30,21 +30,14 @@ class TaskList_Controller:
         task_id = self._model.add(data)
         if task_id != -1:
             self._view.add(task_id,data)
-        #for p in self._model.model_task_list:
-        #    print(p)
 
     def on_button_edit_clicked(self, widget):
         task = self._view.get_task()
-        #ok = self._model.edit(task)
-
-        selection = tree.get_selection()
-        model, treeiter = selection.get_selected()
-        if treeiter != None:
-            data = self._view.run_dialog_add_edit("Editar tarea", widget.get_toplevel(), model[treeiter])
-            if data != None:
-                model.set(treeiter, 0, data[0])
-                model.set(treeiter, 1, data[1])
-                model.set(treeiter, 2, data[2])
+        if task != None:
+            data = self._view.run_dialog_add_edit("Editar tarea", widget.get_toplevel(),task)
+            ok = self._model.edit(task[0],data)
+            if ok != -1:
+                self._view.edit(task[0],data)
             
     def on_button_remove_clicked(self, widget):
         task = self._view.get_task()
@@ -54,12 +47,7 @@ class TaskList_Controller:
                 self._view.remove(task[0])
 
     def on_button_exit_clicked(self, widget):
-        #self._view.run_dialog()?
-        dialog = Gtk.MessageDialog(widget.get_toplevel(), 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "¿ Quieres detener esta acción ?")
-        dialog.format_secondary_text("Si no la detienes, el programa terminará")
-        dialog.run()
-        dialog.destroy()
-        Gtk.main_quit()
+        self._view.exit(widget)
 
 '''
 Vista
@@ -146,7 +134,7 @@ class TaskList_View:
         self._exit_button.connect('clicked', controller.on_button_exit_clicked)
         self._add_button.connect('clicked', controller.on_button_add_clicked)
         self._delete_button.connect('clicked', controller.on_button_remove_clicked)
-        self._edit_button.connect('clicked', controller.on_button_edit_clicked, self.tree)    
+        self._edit_button.connect('clicked', controller.on_button_edit_clicked)    
 
     def run_dialog_add_edit(self, title, parent, data=None):
         dialog = Gtk.Dialog(title, parent, Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK))
@@ -156,9 +144,9 @@ class TaskList_View:
         fechaEntry = Gtk.Entry()
         hechoCheckButton = Gtk.CheckButton("Hecho")
         if data != None:
-            tareaEntry.set_text(data[0])
-            fechaEntry.set_text(data[1].strftime("%x"))
-            hechoCheckButton.set_active(data[2])
+            tareaEntry.set_text(data[1])
+            fechaEntry.set_text(data[2].strftime("%x"))
+            hechoCheckButton.set_active(data[3])
         grid.attach(Gtk.Label("Tarea"), 0, 0, 1, 1)
         grid.attach(tareaEntry, 1, 0, 1, 1)
         grid.attach(Gtk.Label("Fecha"), 0, 1, 1, 1)
@@ -184,6 +172,12 @@ class TaskList_View:
             task = self.store.get(treeiter,0,1,2,3)
         return task
 
+    def exit(self,widget):
+        dialog = Gtk.MessageDialog(widget.get_toplevel(), 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "¿ Quieres detener esta acción ?")
+        dialog.format_secondary_text("Si no la detienes, el programa terminará")
+        dialog.run()
+        dialog.destroy()
+        Gtk.main_quit()
 
     def add(self, task_id, data):
         data = list(data)
@@ -191,8 +185,10 @@ class TaskList_View:
         data = tuple(data)
         self.store.append(data)
 
-    def edit(self, id, data):
-        pass
+    def edit(self, task_id, data):
+        for task in self.store:
+            if task[0] == task_id:
+                self.store.set(task.iter, 1, data[0], 2, data[1], 3, data[2])
 
     def remove(self, task_id):
         for task in self.store:
@@ -250,35 +246,24 @@ class TaskList_Model:
             self.ID += 1
         return done
 
-    def edit(self, data):
+    def edit(self, task_id, data):
         done = -1
         #cojo el ID para buscar si está ese elemento en la lista
-        tempID = data[0]
-        if (tempID in self.model_task_list):
-            #obtengo la posición de la lista donde está el elemento
-            #https://stackoverflow.com/questions/364621/how-to-get-items-position-in-a-list
-            [i for i,x in enumerate(self.model_task_list) if x[0] == tempID]
-            #[i for i,x in index(self.model_task_list) if x[0] == tempID]
-            #actualizo los datos de la posicion i
-            self.model_task_list[i][1] = data[1]
-            self.model_task_list[i][2] = data[2]
-            self.model_task_list[i][3] = data[3]
-            #probar list[i][1:3] = data[1:3]
-            done = tempID
-        return done
-
-
-
-
-
+        for task in self.model_task_list:
+            if task_id == task[0]:
+                task = (task_id, data[0], data[1], data[2])
+                print(task)
+                done = task_id
+                break
         return done
 
     def remove(self, task_id):
         done = -1
-        for item in self.model_task_list:
-            if (task_id == item[0]):
+        for task in self.model_task_list:
+            if (task_id == task[0]):
                 done = task_id
-                self.model_task_list.remove(item)
+                self.model_task_list.remove(task)
+                break
         return done
 
 if __name__ == '__main__':
