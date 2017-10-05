@@ -67,6 +67,28 @@ class TaskList_View:
             if model[treeiter1][2] > model[treeiter2][2]:
                 return 1
             return 0
+            
+        def welcome(window):
+            self.welcome = Gtk.Dialog("El mítico gestor de tareas", window, 0, 
+                                 (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                                  Gtk.STOCK_OK, Gtk.ResponseType.OK))
+            vbox = Gtk.VBox(spacing = 10)
+            welcome.get_content_area().add(vbox)
+                        
+            etiqueta1 = Gtk.Label("Bienvenido !!!!!111!!!")
+
+            etiqueta2 = Gtk.Label("(╯◕_◕)╯ (╯◕_◕)╯ ╰(◣﹏◢)╯ ╰(◕_◕╰) ╰(◕_◕╰)")
+            vbox.pack_start(etiqueta1, True, True, 0)
+            vbox.pack_start(etiqueta2, True, True, 0)
+            self.welcome.show_all()
+            respuesta = welcome.run()
+                    
+        if respuesta == Gtk.ResponseType.OK:
+            self.welcome.destroy()
+            win.show_all()
+        elif respuesta == Gtk.ResponseType.CANCEL:
+            self.welcome.destroy()
+            Gtk.main_quit()
 
         self._win = Gtk.Window(title="Práctica 1 -- IPM 17/18")
         self._win.connect("delete-event", Gtk.main_quit)
@@ -128,7 +150,7 @@ class TaskList_View:
 
         self._edit_button = Gtk.Button(label="Editar")
         box2.pack_end(self._edit_button, True, True, 0)
-        #GLib.idle_add(welcome, self._win)
+        GLib.idle_add(welcome, self._win)
         self._win.show_all()
 
     def connect(self, controller):
@@ -196,29 +218,6 @@ class TaskList_View:
             if task[0] == task_id:
                 self.store.remove(task.iter)
                 return
-
-
-    # def welcome(window):
-    #     welcome = Gtk.Dialog("El mítico gestor de tareas", window, 0, 
-    #                          (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-    #                           Gtk.STOCK_OK, Gtk.ResponseType.OK))
-    #     vbox = Gtk.VBox(spacing = 10)
-    #     welcome.get_content_area().add(vbox)
-                    
-    #     etiqueta1 = Gtk.Label("Bienvenido !!!!!111!!!")
-
-    #     etiqueta2 = Gtk.Label("(╯◕_◕)╯ (╯◕_◕)╯ ╰(◣﹏◢)╯ ╰(◕_◕╰) ╰(◕_◕╰)")
-    #     vbox.pack_start(etiqueta1, True, True, 0)
-    #     vbox.pack_start(etiqueta2, True, True, 0)
-    #     welcome.show_all()
-    #     respuesta = welcome.run()
-                    
-    #     if respuesta == Gtk.ResponseType.OK:
-    #         welcome.destroy()
-    #         win.show_all()
-    #     elif respuesta == Gtk.ResponseType.CANCEL:
-    #         welcome.destroy()
-    #         Gtk.main_quit()
 
 '''
 Modelo
