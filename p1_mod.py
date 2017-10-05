@@ -50,6 +50,9 @@ class TaskList_Controller:
     def on_button_exit_clicked(self, widget):
         self._view.exit(widget)
 
+    def on_row_selected(self, widget, position, n_column):
+        self._view.update_state(True)
+
 '''
 Vista
 '''
@@ -98,6 +101,9 @@ class TaskList_View:
 
         #se crea un treeview sobre la lista store
         self.tree = Gtk.TreeView(self.store)
+        #activamos que la activación de una fila se produzca en un simple click en vez 
+        #de doble click
+        self.tree.set_activate_on_single_click(True)
         renderer = Gtk.CellRendererText()
         column = Gtk.TreeViewColumn("Tarea", renderer, text=1)
         self.tree.append_column(column)
@@ -125,6 +131,7 @@ class TaskList_View:
         box2.pack_end(self._add_button, True, True, 0)
 
         self._delete_button = Gtk.Button(label="Eliminar")
+        self._delete_button.set_sensitive(False)
         box2.pack_end(self._delete_button, True, True, 0)
 
         self._edit_button = Gtk.Button(label="Editar")
@@ -135,7 +142,9 @@ class TaskList_View:
         self._exit_button.connect('clicked', controller.on_button_exit_clicked)
         self._add_button.connect('clicked', controller.on_button_add_clicked)
         self._delete_button.connect('clicked', controller.on_button_remove_clicked)
-        self._edit_button.connect('clicked', controller.on_button_edit_clicked)    
+        self._edit_button.connect('clicked', controller.on_button_edit_clicked)
+        self.tree.connect('row-activated', controller.on_row_selected)
+
 
     def run_dialog_add_edit(self, title, parent, data=None):
         dialog = Gtk.Dialog(title, parent, Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK))
@@ -196,6 +205,8 @@ class TaskList_View:
             if task[0] == task_id:
                 self.store.remove(task.iter)
                 return
+    def update_state(self, active):
+        self._delete_button.set_sensitive(active)
 
 '''
 Modelo

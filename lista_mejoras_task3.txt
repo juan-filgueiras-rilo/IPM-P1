@@ -9,3 +9,6 @@ Lista de mejoras a implementar en la task3
 	7-El botón salir desaparece de la ventana principal
 	8-La ventana que iba asociada a salir se asocia a la cruz de salida, y se le añade la opción de No salir
 	9-Por los motivos 2 y 6, los diálogos de añadir y editar desaparecen
+
+
+	para hacer lo del checkbox, llamar a on_row_selected, que devuelve 4 arguentos, el 3 es el numero de fila y el 4 es la columna q se ha selecciondo, si se ha seleccionado la columna del checkbox, le cambiamos al estado contrario
