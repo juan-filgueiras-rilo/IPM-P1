@@ -30,15 +30,6 @@ class TaskList_Controller:
         task_id = self._model.add(data)
         if task_id != -1:
             self._view.add(task_id,data)
-
-    def on_button_edit_clicked(self, widget):
-        task = self._view.get_task()
-        if task != None:
-            data = self._view.run_dialog_add_edit("Editar tarea", widget.get_toplevel(),task)
-            if data != None:
-                ok = self._model.edit(task[0],data)
-                if ok != -1:
-                    self._view.edit(task[0],data)
             
     def on_button_remove_clicked(self, widget):
         task = self._view.get_task()
@@ -75,24 +66,26 @@ class TaskList_Controller:
         #pasamos la cuadrupla a lista, editamos el valor y lo editamos en modelo
         #si todo ok, lo editamos en la vista tambien
         task = self._view.get_task()
-        task = list(task)
-        task[1] = text
-        task = tuple(task)
-        data = (task[1], task[2], task[3])
-        ok = self._model.edit(task[0], data)
-        if ok != -1:
-                self._view.edit(task[0], data)
+        if (task != None):
+            task = list(task)
+            task[1] = text
+            task = tuple(task)
+            data = (task[1], task[2], task[3])
+            ok = self._model.edit(task[0], data)
+            if ok != -1:
+                    self._view.edit(task[0], data)
 
     def on_task_date_edit(self, widget, position, text):
         task = self._view.get_task()
-        task = list(task)
-        #hay que convertirlo a datetime
-        task[2] = datetime.strptime(text, "%d/%m/%y")
-        task = tuple(task)
-        data = (task[1], task[2], task[3])
-        ok = self._model.edit(task[0], data)
-        if ok != -1:
-                self._view.edit(task[0], data)
+        if (task != None):
+            task = list(task)
+            #hay que convertirlo a datetime
+            task[2] = datetime.strptime(text, "%d/%m/%y")
+            task = tuple(task)
+            data = (task[1], task[2], task[3])
+            ok = self._model.edit(task[0], data)
+            if ok != -1:
+                    self._view.edit(task[0], data)
 
 '''
 Vista
@@ -181,15 +174,12 @@ class TaskList_View:
         self._delete_button.set_sensitive(False)
         box2.pack_end(self._delete_button, True, True, 0)
 
-        self._edit_button = Gtk.Button(label="Editar")
-        box2.pack_end(self._edit_button, True, True, 0)
         self._win.show_all()
 
     def connect(self, controller):
         self._exit_button.connect('clicked', controller.on_button_exit_clicked)
         self._add_button.connect('clicked', controller.on_button_add_clicked)
         self._delete_button.connect('clicked', controller.on_button_remove_clicked)
-        self._edit_button.connect('clicked', controller.on_button_edit_clicked)
         self.tree.connect('row-activated', controller.on_row_selected)
         #editar el nombre de la tarea
         self.renderer_name.connect('edited', controller.on_task_name_edit)
