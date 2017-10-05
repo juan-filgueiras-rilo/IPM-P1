@@ -1,0 +1,11 @@
+Lista de mejoras a implementar en la task3
+
+	1-El diálogo de Welcome desaparece
+	2-El botón de editar, desaparece, ahora se puede editar la tarea directamente desde la ventana principal
+	3-Para marcar una tarea como Hecha, lo podremos hacer también desde la ventana principal
+	4-El botón de eliminar estará desactivado por defecto hasta que una tarea de la lista sea seleccionada
+	5-Se validan las fechas al introducir una tarea (no puede insertarse una tarea con fecha anterior a la actual)
+	6-El botón de añadir desaparece de la ventana principal, las tareas se podrán añadir directamente desde la ventana principal
+	7-El botón salir desaparece de la ventana principal
+	8-La ventana que iba asociada a salir se asocia a la cruz de salida, y se le añade la opción de No salir
+	9-Por los motivos 2 y 6, los diálogos de añadir y editar desaparecen
