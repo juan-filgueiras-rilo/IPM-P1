@@ -12,3 +12,6 @@ Lista de mejoras a implementar en la task3
 
 
 	para hacer lo del checkbox, llamar a on_row_selected, que devuelve 4 arguentos, el 3 es el numero de fila y el 4 es la columna q se ha selecciondo, si se ha seleccionado la columna del checkbox, le cambiamos al estado contrario
+
+
+	si eliminamos todos los elementos, no tenemos ninguno seleccionado, y el botón eliminar está activo

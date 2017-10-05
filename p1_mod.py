@@ -51,6 +51,22 @@ class TaskList_Controller:
         self._view.exit(widget)
 
     def on_row_selected(self, widget, position, n_column):
+        if (n_column.get_title() == "Hecho"):
+            task = self._view.get_task()
+            #convertimos a lista y despues reconvertimos a tupla pq las tuplas son
+            #inmutables
+            task = list(task)
+            # if (task[3] == True):
+            #     task[3] = False
+            # else:
+            #     task[3] = True
+            #haciendolo ternaria, queda mas chulo
+            task[3] = False if task[3] else True
+            task = tuple(task)
+            data = (task[1], task[2], task[3])
+            ok = self._model.edit(task[0], data)
+            if ok != -1:
+                self._view.edit(task[0], data)
         self._view.update_state(True)
 
 '''
