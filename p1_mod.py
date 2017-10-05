@@ -67,7 +67,32 @@ class TaskList_Controller:
             ok = self._model.edit(task[0], data)
             if ok != -1:
                 self._view.edit(task[0], data)
-        self._view.update_state(True)
+        else:
+            self._view.update_state(True)
+
+
+    def on_task_name_edit(self, widget, position, text):
+        #pasamos la cuadrupla a lista, editamos el valor y lo editamos en modelo
+        #si todo ok, lo editamos en la vista tambien
+        task = self._view.get_task()
+        task = list(task)
+        task[1] = text
+        task = tuple(task)
+        data = (task[1], task[2], task[3])
+        ok = self._model.edit(task[0], data)
+        if ok != -1:
+                self._view.edit(task[0], data)
+
+    def on_task_date_edit(self, widget, position, text):
+        task = self._view.get_task()
+        task = list(task)
+        #hay que convertirlo a datetime
+        task[2] = datetime.strptime(text, "%d/%m/%y")
+        task = tuple(task)
+        data = (task[1], task[2], task[3])
+        ok = self._model.edit(task[0], data)
+        if ok != -1:
+                self._view.edit(task[0], data)
 
 '''
 Vista
@@ -120,18 +145,24 @@ class TaskList_View:
         #activamos que la activación de una fila se produzca en un simple click en vez 
         #de doble click
         self.tree.set_activate_on_single_click(True)
-        renderer = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn("Tarea", renderer, text=1)
+        #diferenciamos entre el renderer del nombre y de la fecha pq a la hora de editar
+        #seran eventos diferentes
+        self.renderer_name = Gtk.CellRendererText()
+        #marcamos la columna entera como editable
+        self.renderer_name.set_property("editable", True)
+        column = Gtk.TreeViewColumn("Tarea", self.renderer_name, text=1)
         self.tree.append_column(column)
         column.set_sort_column_id(1)
-        renderer = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn("Fecha", renderer)
-        column.set_cell_data_func(renderer, date_cell_data_func)
+        self.renderer_date = Gtk.CellRendererText()
+        #marcamos la columna entera como editable
+        self.renderer_date.set_property("editable", True)
+        column = Gtk.TreeViewColumn("Fecha", self.renderer_date)
+        column.set_cell_data_func(self.renderer_date, date_cell_data_func)
         self.tree.append_column(column)
         column.set_sort_column_id(2)
         self.store.set_sort_func(2, compare_date, None)
-        renderer = Gtk.CellRendererToggle()
-        column = Gtk.TreeViewColumn("Hecho", renderer, active=3)
+        renderer_make = Gtk.CellRendererToggle()
+        column = Gtk.TreeViewColumn("Hecho", renderer_make, active=3)
         self.tree.append_column(column)
         box.pack_end(self.tree, True, True, 0)
         column.set_sort_column_id(3)
@@ -160,6 +191,12 @@ class TaskList_View:
         self._delete_button.connect('clicked', controller.on_button_remove_clicked)
         self._edit_button.connect('clicked', controller.on_button_edit_clicked)
         self.tree.connect('row-activated', controller.on_row_selected)
+        #editar el nombre de la tarea
+        self.renderer_name.connect('edited', controller.on_task_name_edit)
+        #editar la fecha de la tarea
+        self.renderer_date.connect('edited', controller.on_task_date_edit)
+
+
 
 
     def run_dialog_add_edit(self, title, parent, data=None):

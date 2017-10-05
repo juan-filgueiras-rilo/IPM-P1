@@ -15,3 +15,20 @@ Lista de mejoras a implementar en la task3
 
 
 	si eliminamos todos los elementos, no tenemos ninguno seleccionado, y el botón eliminar está activo
+
+	si ampliamos la ventana o empezamos a eliminar tareas, crecen los botones editar, eliminar y añadir. Es esto correcto?
+
+	un método como validar fechas, donde debería ir?
+
+	como llamamos a editar varias veces, para evitar redundancias de codigo, podemos hacer en el controlador un metodo que sea algo asi:
+		def edittask(task, field, change) #donde field es el numero de campo a editar (1, 2 ó 3) y change es el cambio que se hace
+			task = list(task)
+			if (field == 2):
+				task[field] = datetime.strptime(text, "%d/%m/%y")
+	        else:
+	        	task[field] = change
+	        task = tuple(task)
+	        data = (task[1], task[2], task[3])
+	        ok = self._model.edit(task[0], data)
+	        if ok != -1:
+	                self._view.edit(task[0], data)
