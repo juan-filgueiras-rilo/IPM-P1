@@ -1,18 +1,24 @@
 Lista de mejoras a implementar en la task3
 
-	1-El diálogo de Welcome desaparece
-	2-El botón de editar, desaparece, ahora se puede editar la tarea directamente desde la ventana principal
-	3-Para marcar una tarea como Hecha, lo podremos hacer también desde la ventana principal
-	4-El botón de eliminar estará desactivado por defecto hasta que una tarea de la lista sea seleccionada
+HECHO:
+
+
+	1-El diálogo de Welcome desaparece - OK
+	2-El botón de editar, desaparece, ahora se puede editar la tarea directamente desde la ventana principal - OK
+	3-Para marcar una tarea como Hecha, lo podremos hacer también desde la ventana principal - OK
+	4-El botón de eliminar estará desactivado por defecto hasta que una tarea de la lista sea seleccionada - OK
+	
+
+PENDIENTE:
 	5-Se validan las fechas al introducir una tarea (no puede insertarse una tarea con fecha anterior a la actual)
 	6-El botón de añadir desaparece de la ventana principal, las tareas se podrán añadir directamente desde la ventana principal
 	7-El botón salir desaparece de la ventana principal
 	8-La ventana que iba asociada a salir se asocia a la cruz de salida, y se le añade la opción de No salir
-	9-Por los motivos 2 y 6, los diálogos de añadir y editar desaparecen
+	9-Por los motivos 2 y 6, los diálogos de añadir y editar desaparecen 
 
 
-	para hacer lo del checkbox, llamar a on_row_selected, que devuelve 4 arguentos, el 3 es el numero de fila y el 4 es la columna q se ha selecciondo, si se ha seleccionado la columna del checkbox, le cambiamos al estado contrario
 
+DUDAS:
 
 	si eliminamos todos los elementos, no tenemos ninguno seleccionado, y el botón eliminar está activo
 
