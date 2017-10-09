@@ -27,7 +27,7 @@ class TaskList_Controller:
 
     def on_button_add_clicked(self, widget):
         print(widget.get_toplevel())
-        data = self._view.run_dialog_add_edit("Añadir tarea", widget.get_toplevel())
+        data = self._view.run_dialog_add("Añadir tarea", widget.get_toplevel())
         task_id = self._model.add(data)
         if task_id != -1:
             self._view.add(task_id,data)
@@ -49,10 +49,6 @@ class TaskList_Controller:
             #convertimos a lista y despues reconvertimos a tupla pq las tuplas son
             #inmutables
             task = list(task)
-            # if (task[3] == True):
-            #     task[3] = False
-            # else:
-            #     task[3] = True
             #haciendolo ternaria, queda mas chulo
             task[3] = False if task[3] else True
             task = tuple(task)
@@ -117,18 +113,55 @@ class TaskList_View:
             
         
         self._win = Gtk.Window(title="Práctica 1 -- IPM 17/18")
-        #self._win.connect("delete-event", Gtk.main_quit)
         # El código sigue los ejemplos del tuto: https://python-gtk-3-tutorial.readthedocs.io/en/latest/index.html
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        
+
+        #metemos los entrys en una caja nueva por el final
+        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        box.pack_end(hbox, True, True, 0)
+        tareaEntry = Gtk.Entry()
+        fechaEntry = Gtk.Entry()
+        
+        # alignment1 = Gtk.Alignment(xalign=0.0, xscale=0.0, yalign=0, yscale=1.0)
+        # alignment1.add(tareaEntry)
+        # alignment2 = Gtk.Alignment(xalign=1.0, xscale=0.0, yalign=0, yscale=1.0)
+        # alignment2.add(fechaEntry)
+        # hbox.pack_start(alignment1, True, True, 0)
+        # hbox.pack_end(alignment2, True, True, 0)
+
+        hbox.pack_start(tareaEntry, True, True, 0)
+        hbox.pack_end(fechaEntry, True, True, 0)
+
+        #metemos los labels en una caja imnediatamente encima de la anterior
+        hbox1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing = 8)
+        box.pack_end(hbox1, True, True, 0)
+        hbox1.pack_start(Gtk.Label("Nombre de tarea"), True, True, 0)
+        hbox1.pack_start(Gtk.Label("Fecha"), True, True, 0)
+
+
+
+
+
+
+        # hbox1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
+        # box.pack_end(hbox1, False, False, 0)
+        # grid = Gtk.Grid()
+        # tareaEntry = Gtk.Entry()
+        # grid.attach(tareaEntry, 1, 1, 1, 1)
+        # hbox1.pack_end(grid, False, False, 0)
+
+        # hbox2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
+        # box.pack_end(hbox2, False, False, 0)
+        # grid = Gtk.Grid()
+        # fechaEntry = Gtk.Entry()
+        # grid.attach(fechaEntry, 1, 1, 1, 1)
+        # hbox2.pack_end(grid, False, False, 0)
+
+
+
+
         self._win.add(box)
-        #
-        # # 
-        #
-        # self._exit_button = Gtk.Button(label="Salir")
-        # box.pack_end(self._exit_button, True, True, 0)
-        #
-        # #
-        #
         self.store = Gtk.ListStore(int, str, GObject.TYPE_PYOBJECT, bool)
         self.store.append([100,"Llevar coche al taller", date.today(), False])
         self.store.append([101,"Lavar el coche", date(2017, 8, 1), False])
@@ -184,6 +217,8 @@ class TaskList_View:
         self._delete_button.set_sensitive(False)
         box2.pack_end(self._delete_button, True, True, 0)
 
+        
+
         self._win.show_all()
 
     def connect(self, controller):
@@ -200,7 +235,7 @@ class TaskList_View:
 
 
 
-    def run_dialog_add_edit(self, title, parent, data=None):
+    def run_dialog_add(self, title, parent, data=None):
         dialog = Gtk.Dialog(title, parent, Gtk.DialogFlags.DESTROY_WITH_PARENT,
                      (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, 
                         Gtk.ResponseType.OK))
@@ -247,24 +282,15 @@ class TaskList_View:
         return task
 
     def exit(self, parent):
-        # dialog = Gtk.MessageDialog(widget.get_toplevel(), 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "¿ Quieres detener esta acción ?")
-        # dialog.format_secondary_text("Si no la detienes, el programa terminará")
-        # dialog.run()
-        # dialog.destroy()
-        # Gtk.main_quit()
-
-        # welcome = Gtk.Dialog("ATENCION", self._win, 0, 
-        #                  (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-        #                   Gtk.STOCK_OK, Gtk.ResponseType.OK))
-        dialog = Gtk.Dialog("ATENCION", parent, Gtk.DialogFlags.DESTROY_WITH_PARENT, 
+        dialog = Gtk.Dialog("WARNING", parent, Gtk.DialogFlags.DESTROY_WITH_PARENT, 
                 (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, 
                 Gtk.STOCK_OK, Gtk.ResponseType.OK))
         vbox = Gtk.VBox(spacing = 10)
         dialog.get_content_area().add(vbox)
                     
-        etiqueta1 = Gtk.Label("HOLA")
+        etiqueta1 = Gtk.Label("Do you want to close application?")
 
-        etiqueta2 = Gtk.Label("Si no la detienes, el programa terminará")
+        etiqueta2 = Gtk.Label("If you don't cancel, application will close")
         vbox.pack_start(etiqueta1, True, True, 0)
         vbox.pack_start(etiqueta2, True, True, 0)
         vbox.show_all()

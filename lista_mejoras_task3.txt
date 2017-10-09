@@ -14,7 +14,8 @@ HECHO:
 PENDIENTE:
 	
 	6-El botón de añadir desaparece de la ventana principal, las tareas se podrán añadir directamente desde la ventana principal
-	9-Por los motivos 2 y 6, los diálogos de añadir y editar desaparecen 
+	9-Por los motivos 2 y 6, los diálogos de añadir y editar desaparecen
+	10 - las tareas no se pueden añadir como hechas 
 
 
 
