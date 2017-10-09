@@ -38,3 +38,5 @@ DUDAS:
 	        ok = self._model.edit(task[0], data)
 	        if ok != -1:
 	                self._view.edit(task[0], data)
+                    
+    nuevo caso de uso? eliminar TODAS las que estén HECHAS

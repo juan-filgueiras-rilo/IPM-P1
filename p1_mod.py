@@ -171,6 +171,7 @@ class TaskList_View:
         box2.pack_end(self._add_button, True, True, 0)
 
         self._delete_button = Gtk.Button(label="Eliminar")
+        self._delete_button.get_style_context().add_class('destructive-action')
         self._delete_button.set_sensitive(False)
         box2.pack_end(self._delete_button, True, True, 0)
 
