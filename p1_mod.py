@@ -6,7 +6,7 @@ __author__     = "Guillermo Martín Villar, Juan Luis Filgueiras Rilo"
 __copyright__  = "GNU General Public Licencse v2"
 
 
-from datetime import datetime, date
+from datetime import datetime, date, time
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -38,7 +38,9 @@ class TaskList_Controller:
             if ok != -1:
                 self._view.remove(task[0])
 
-    def on_button_exit_clicked(self, widget):
+    def on_button_exit_clicked(self, widget, event):
+        print(widget)
+        print(event)
         self._view.exit(widget)
 
     def on_row_selected(self, widget, position, n_column):
@@ -75,17 +77,25 @@ class TaskList_Controller:
             if ok != -1:
                     self._view.edit(task[0], data)
 
+    def validate_date(self, datetovalidate):
+        return (datetime.now() < datetovalidate)
+
     def on_task_date_edit(self, widget, position, text):
         task = self._view.get_task()
         if (task != None):
             task = list(task)
             #hay que convertirlo a datetime
             task[2] = datetime.strptime(text, "%d/%m/%y")
-            task = tuple(task)
-            data = (task[1], task[2], task[3])
-            ok = self._model.edit(task[0], data)
-            if ok != -1:
+            if not self.validate_date(task[2]):
+                self._view.run_dialog_date_error()
+            else:
+                task = tuple(task)
+                data = (task[1], task[2], task[3])
+                ok = self._model.edit(task[0], data)
+                if ok != -1:
                     self._view.edit(task[0], data)
+
+    
 
 '''
 Vista
@@ -107,16 +117,15 @@ class TaskList_View:
             
         
         self._win = Gtk.Window(title="Práctica 1 -- IPM 17/18")
-        self._win.connect("delete-event", Gtk.main_quit)
-        
+        #self._win.connect("delete-event", Gtk.main_quit)
         # El código sigue los ejemplos del tuto: https://python-gtk-3-tutorial.readthedocs.io/en/latest/index.html
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
         self._win.add(box)
         #
         # # 
         #
-        self._exit_button = Gtk.Button(label="Salir")
-        box.pack_end(self._exit_button, True, True, 0)
+        # self._exit_button = Gtk.Button(label="Salir")
+        # box.pack_end(self._exit_button, True, True, 0)
         #
         # #
         #
@@ -178,7 +187,8 @@ class TaskList_View:
         self._win.show_all()
 
     def connect(self, controller):
-        self._exit_button.connect('clicked', controller.on_button_exit_clicked)
+        #self._exit_button.connect('clicked', controller.on_button_exit_clicked)
+        self._win.connect("delete-event", controller.on_button_exit_clicked)
         self._add_button.connect('clicked', controller.on_button_add_clicked)
         self._delete_button.connect('clicked', controller.on_button_remove_clicked)
         self.tree.connect('row-activated', controller.on_row_selected)
@@ -218,6 +228,14 @@ class TaskList_View:
         dialog.destroy()
         return data
 
+    def run_dialog_date_error(self):
+        dialog = Gtk.MessageDialog(self._win, 0, 
+            Gtk.MessageType.INFO, Gtk.ButtonsType.OK, 
+            "CRITICAL ERROR")
+        dialog.format_secondary_text("Given date is not valid")
+        dialog.run()
+        dialog.destroy()
+
     def get_task(self):
         task = None
         selection = self.tree.get_selection()
@@ -232,6 +250,27 @@ class TaskList_View:
         dialog.run()
         dialog.destroy()
         Gtk.main_quit()
+
+        welcome = Gtk.Dialog("El mítico gestor de tareas", window, 0, 
+                         (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                          Gtk.STOCK_OK, Gtk.ResponseType.OK))
+        vbox = Gtk.VBox(spacing = 10)
+        welcome.get_content_area().add(vbox)
+                    
+        etiqueta1 = Gtk.Label("Bienvenido !!!!!111!!!")
+
+        etiqueta2 = Gtk.Label("Si no la detienes, el programa terminará")
+        vbox.pack_start(etiqueta1, True, True, 0)
+        vbox.pack_start(etiqueta2, True, True, 0)
+        welcome.show_all()
+        respuesta = welcome.run()
+                    
+        if respuesta == Gtk.ResponseType.OK:
+            welcome.destroy()
+            win.show_all()
+        elif respuesta == Gtk.ResponseType.CANCEL:
+            welcome.destroy()
+            Gtk.main_quit()
 
     def add(self, task_id, data):
         data = list(data)
