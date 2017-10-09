@@ -26,6 +26,7 @@ class TaskList_Controller:
         self._model = model
 
     def on_button_add_clicked(self, widget):
+        print(widget.get_toplevel())
         data = self._view.run_dialog_add_edit("Añadir tarea", widget.get_toplevel())
         task_id = self._model.add(data)
         if task_id != -1:
@@ -39,9 +40,8 @@ class TaskList_Controller:
                 self._view.remove(task[0])
 
     def on_button_exit_clicked(self, widget, event):
-        print(widget)
-        print(event)
-        self._view.exit(widget)
+        signal = self._view.exit(widget.get_toplevel())
+        return signal
 
     def on_row_selected(self, widget, position, n_column):
         if (n_column.get_title() == "Hecho"):
@@ -201,7 +201,9 @@ class TaskList_View:
 
 
     def run_dialog_add_edit(self, title, parent, data=None):
-        dialog = Gtk.Dialog(title, parent, Gtk.DialogFlags.DESTROY_WITH_PARENT, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK))
+        dialog = Gtk.Dialog(title, parent, Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                     (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, 
+                        Gtk.ResponseType.OK))
         box = dialog.get_content_area()
         grid = Gtk.Grid()
         tareaEntry = Gtk.Entry()
@@ -244,33 +246,35 @@ class TaskList_View:
             task = self.store.get(treeiter,0,1,2,3)
         return task
 
-    def exit(self,widget):
-        dialog = Gtk.MessageDialog(widget.get_toplevel(), 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "¿ Quieres detener esta acción ?")
-        dialog.format_secondary_text("Si no la detienes, el programa terminará")
-        dialog.run()
-        dialog.destroy()
-        Gtk.main_quit()
+    def exit(self, parent):
+        # dialog = Gtk.MessageDialog(widget.get_toplevel(), 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "¿ Quieres detener esta acción ?")
+        # dialog.format_secondary_text("Si no la detienes, el programa terminará")
+        # dialog.run()
+        # dialog.destroy()
+        # Gtk.main_quit()
 
-        welcome = Gtk.Dialog("El mítico gestor de tareas", window, 0, 
-                         (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                          Gtk.STOCK_OK, Gtk.ResponseType.OK))
+        # welcome = Gtk.Dialog("ATENCION", self._win, 0, 
+        #                  (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+        #                   Gtk.STOCK_OK, Gtk.ResponseType.OK))
+        dialog = Gtk.Dialog("ATENCION", parent, Gtk.DialogFlags.DESTROY_WITH_PARENT, 
+                (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, 
+                Gtk.STOCK_OK, Gtk.ResponseType.OK))
         vbox = Gtk.VBox(spacing = 10)
-        welcome.get_content_area().add(vbox)
+        dialog.get_content_area().add(vbox)
                     
-        etiqueta1 = Gtk.Label("Bienvenido !!!!!111!!!")
+        etiqueta1 = Gtk.Label("HOLA")
 
         etiqueta2 = Gtk.Label("Si no la detienes, el programa terminará")
         vbox.pack_start(etiqueta1, True, True, 0)
         vbox.pack_start(etiqueta2, True, True, 0)
-        welcome.show_all()
-        respuesta = welcome.run()
+        vbox.show_all()
+        respuesta = dialog.run()
                     
         if respuesta == Gtk.ResponseType.OK:
-            welcome.destroy()
-            win.show_all()
-        elif respuesta == Gtk.ResponseType.CANCEL:
-            welcome.destroy()
             Gtk.main_quit()
+        else:
+            dialog.destroy()
+            return True
 
     def add(self, task_id, data):
         data = list(data)
