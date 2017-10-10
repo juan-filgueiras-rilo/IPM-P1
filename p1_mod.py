@@ -25,13 +25,30 @@ class TaskList_Controller:
     def set_model(self, model):
         self._model = model
 
+
     def on_button_add_clicked(self, widget):
-        print(widget.get_toplevel())
-        data = self._view.run_dialog_add("Añadir tarea", widget.get_toplevel())
-        task_id = self._model.add(data)
-        if task_id != -1:
-            self._view.add(task_id,data)
-            
+        
+        #data = self._view.run_dialog_add("Añadir tarea", widget.get_toplevel())
+        self._view.run_dialog_add("añadir tarea", widget.get_toplevel())
+        # task_id = self._model.add(data)
+        # if task_id != -1:
+        #     self._view.add(task_id,data)
+       
+    def on_button_add_task_clicked(self, widget):
+        data = self._view.run_dialog_add_prueba("añadir tarea", widget.get_toplevel())
+        data = list(data)
+        #hay que convertirlo a datetime
+        #validar aqui las fechas
+        data[1] = datetime.strptime(data[1], "%d/%m/%y")
+        if not self.validate_date(data[1]):
+                self._view.run_dialog_date_error()
+        else:
+            data = tuple(data)
+            task_id = self._model.add(data)
+            if task_id != -1:
+                self._view.add(task_id,data)
+
+
     def on_button_remove_clicked(self, widget):
         task = self._view.get_task()
         if task != None:
@@ -91,6 +108,7 @@ class TaskList_Controller:
                 if ok != -1:
                     self._view.edit(task[0], data)
 
+
     
 
 '''
@@ -115,51 +133,38 @@ class TaskList_View:
         self._win = Gtk.Window(title="Práctica 1 -- IPM 17/18")
         # El código sigue los ejemplos del tuto: https://python-gtk-3-tutorial.readthedocs.io/en/latest/index.html
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
-        
 
         #metemos los entrys en una caja nueva por el final
-        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-        box.pack_end(hbox, True, True, 0)
-        tareaEntry = Gtk.Entry()
-        fechaEntry = Gtk.Entry()
+        self.hbox1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         
-        # alignment1 = Gtk.Alignment(xalign=0.0, xscale=0.0, yalign=0, yscale=1.0)
-        # alignment1.add(tareaEntry)
-        # alignment2 = Gtk.Alignment(xalign=1.0, xscale=0.0, yalign=0, yscale=1.0)
-        # alignment2.add(fechaEntry)
-        # hbox.pack_start(alignment1, True, True, 0)
-        # hbox.pack_end(alignment2, True, True, 0)
+        self.tareaEntry = Gtk.Entry()
+        self.fechaEntry = Gtk.Entry()
 
-        hbox.pack_start(tareaEntry, True, True, 0)
-        hbox.pack_end(fechaEntry, True, True, 0)
+        self.hbox1.pack_start(self.tareaEntry, True, True, 0)
+        
 
+
+        #pendiente de cuadrar mejor
         #metemos los labels en una caja imnediatamente encima de la anterior
-        hbox1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing = 8)
-        box.pack_end(hbox1, True, True, 0)
-        hbox1.pack_start(Gtk.Label("Nombre de tarea"), True, True, 0)
-        hbox1.pack_start(Gtk.Label("Fecha"), True, True, 0)
+        self.hbox2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing = 8)
+        name_label = Gtk.Label("Nombre de tarea")
+        name_label.set_xalign(0)
+        name_label.set_max_width_chars(1)
+        self.hbox2.pack_start(name_label, True, True, 0)
 
+        date_label = Gtk.Label("Fecha")
+        date_label.set_xalign(0)
+        self.hbox2.pack_start(date_label, True, True, 0)
+        
+        self.add_task_button = Gtk.Button(label="+")
+        #self.add_task_button.set_sensitive(False)
+        #box2.pack_end(self._delete_button, True, True, 0)
 
-
-
-
-
-        # hbox1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
-        # box.pack_end(hbox1, False, False, 0)
-        # grid = Gtk.Grid()
-        # tareaEntry = Gtk.Entry()
-        # grid.attach(tareaEntry, 1, 1, 1, 1)
-        # hbox1.pack_end(grid, False, False, 0)
-
-        # hbox2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
-        # box.pack_end(hbox2, False, False, 0)
-        # grid = Gtk.Grid()
-        # fechaEntry = Gtk.Entry()
-        # grid.attach(fechaEntry, 1, 1, 1, 1)
-        # hbox2.pack_end(grid, False, False, 0)
-
-
-
+        self.hbox1.pack_end(self.add_task_button, True, True, 0)
+        self.hbox1.pack_end(self.fechaEntry, True, True, 0)
+        box.pack_end(self.hbox1, True, True, 0)
+        box.pack_end(self.hbox2, True, True, 0)
+        
 
         self._win.add(box)
         self.store = Gtk.ListStore(int, str, GObject.TYPE_PYOBJECT, bool)
@@ -206,20 +211,27 @@ class TaskList_View:
         # #
         #
 
+
         box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         box.pack_start(box2, True, True, 0)
 
         self._add_button = Gtk.Button(label="Añadir")
+        self._add_button.get_style_context().add_class('suggestive-action')
         box2.pack_end(self._add_button, True, True, 0)
 
         self._delete_button = Gtk.Button(label="Eliminar")
         self._delete_button.get_style_context().add_class('destructive-action')
         self._delete_button.set_sensitive(False)
         box2.pack_end(self._delete_button, True, True, 0)
-
-        
-
         self._win.show_all()
+
+
+
+        self.hbox1.hide()
+        self.hbox2.hide()
+
+
+
 
     def connect(self, controller):
         #self._exit_button.connect('clicked', controller.on_button_exit_clicked)
@@ -231,40 +243,56 @@ class TaskList_View:
         self.renderer_name.connect('edited', controller.on_task_name_edit)
         #editar la fecha de la tarea
         self.renderer_date.connect('edited', controller.on_task_date_edit)
+        self.add_task_button.connect('clicked', controller.on_button_add_task_clicked)
 
 
 
+    def run_dialog_add(self, title, parent):
+        self.hbox1.show_all()
+        self.hbox2.show_all()
+        
 
-    def run_dialog_add(self, title, parent, data=None):
-        dialog = Gtk.Dialog(title, parent, Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                     (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, 
-                        Gtk.ResponseType.OK))
-        box = dialog.get_content_area()
-        grid = Gtk.Grid()
-        tareaEntry = Gtk.Entry()
-        fechaEntry = Gtk.Entry()
-        hechoCheckButton = Gtk.CheckButton("Hecho")
-        if data != None:
-            tareaEntry.set_text(data[1])
-            fechaEntry.set_text(data[2].strftime("%x"))
-            hechoCheckButton.set_active(data[3])
-        grid.attach(Gtk.Label("Tarea"), 0, 0, 1, 1)
-        grid.attach(tareaEntry, 1, 0, 1, 1)
-        grid.attach(Gtk.Label("Fecha"), 0, 1, 1, 1)
-        grid.attach(fechaEntry, 1, 1, 1, 1)
-        grid.attach(hechoCheckButton, 1, 2, 1, 1)
-        box.pack_start(grid, True, True, 0)
-        box.show_all()
-        response = dialog.run()
-        data = None
-        if response == Gtk.ResponseType.OK:
-            try:
-                data = [tareaEntry.get_text(), datetime.strptime(fechaEntry.get_text(), "%x"), hechoCheckButton.get_active()]
-            except ValueError:
-                pass
-        dialog.destroy()
+
+    def run_dialog_add_prueba(self, title, parent):
+        data = (self.tareaEntry.get_text(), self.fechaEntry.get_text(),False)
+        self.tareaEntry.set_text("")
+        self.fechaEntry.set_text("")
+        self.hbox1.hide()
+        self.hbox2.hide()
         return data
 
+
+    # def run_dialog_add(self, title, parent, data=None):
+    #     dialog = Gtk.Dialog(title, parent, Gtk.DialogFlags.DESTROY_WITH_PARENT,
+    #                  (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, 
+    #                     Gtk.ResponseType.OK))
+    #     box = dialog.get_content_area()
+    #     grid = Gtk.Grid()
+    #     tareaEntry = Gtk.Entry()
+    #     fechaEntry = Gtk.Entry()
+    #     hechoCheckButton = Gtk.CheckButton("Hecho")
+    #     if data != None:
+    #         tareaEntry.set_text(data[1])
+    #         fechaEntry.set_text(data[2].strftime("%x"))
+    #         hechoCheckButton.set_active(data[3])
+    #     grid.attach(Gtk.Label("Tarea"), 0, 0, 1, 1)
+    #     grid.attach(tareaEntry, 1, 0, 1, 1)
+    #     grid.attach(Gtk.Label("Fecha"), 0, 1, 1, 1)
+    #     grid.attach(fechaEntry, 1, 1, 1, 1)
+    #     grid.attach(hechoCheckButton, 1, 2, 1, 1)
+    #     box.pack_start(grid, True, True, 0)
+    #     box.show_all()
+    #     response = dialog.run()
+    #     data = None
+    #     if response == Gtk.ResponseType.OK:
+    #         try:
+    #             data = [tareaEntry.get_text(), datetime.strptime(fechaEntry.get_text(), "%x"), hechoCheckButton.get_active()]
+    #         except ValueError:
+    #             pass
+    #     dialog.destroy()
+    #     return data
+
+        
     def run_dialog_date_error(self):
         dialog = Gtk.MessageDialog(self._win, 0, 
             Gtk.MessageType.INFO, Gtk.ButtonsType.OK, 
@@ -320,6 +348,7 @@ class TaskList_View:
                 return
     def update_state(self, active):
         self._delete_button.set_sensitive(active)
+
 
 '''
 Modelo
