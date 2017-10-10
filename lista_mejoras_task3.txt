@@ -17,6 +17,8 @@ HECHO:
 PENDIENTE:
 	fijar tamaño de los botones añadir y eliminar
 	multi selección
+
+	meter una fecha con el día de hoy da error
 	
 
 
