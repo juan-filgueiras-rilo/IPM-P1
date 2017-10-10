@@ -25,31 +25,9 @@ class TaskList_Controller:
 	def set_model(self, model):
 		self._model = model
 
-
-	#metodo que valida el nombre de una tarea, devuelve True si el valor
-	#introducido por parametro es valido y False en caso contrario
-	def validate_taskname(self, name):
-		if (name == ""):
-			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
-				"Task name should not be empty")
-			return False
-		return True
-
-
-	#metodo que valida la fecha de una tarea, devuelve True si el valor
-	#introducido por parametro es valido y False en caso contrario
-	def validate_taskdate(self, date):
-		if not (datetime.now() < date):
-			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
-				"Provided date must be prior to the current date")
-			return False
-		return True
-
-
 	#llamamos al metodo que muestra las cajas en la vista
 	def on_button_add_clicked(self, widget):
 		self._view.run_dialog_add()
-	   
 
 	def on_button_remove_clicked(self, widget):
 		task = self._view.get_task()
@@ -62,28 +40,43 @@ class TaskList_Controller:
 		signal = self._view.exit(widget.get_toplevel())
 		return signal
 
-
-
-	#metodo que intenta pasar un string a datetime, en caso de no poder, lanza un 
-	#dialogo de error
-	def convert_string_to_datetime(self, string_to_convert):
-		try:
-			return (datetime.strptime(string_to_convert, "%d/%m/%y"))
-		except Exception:
-			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
-				"Provided data is not in the correct form (dd/mm/yy)")
-
-	
-
 	#metodo que se lanza al editar la columna fecha de una tarea
 	def on_task_date_edit(self, widget, position, text):
-		text = self.convert_string_to_datetime(text)
-		if (self.validate_taskdate(text)):
+		date = self._model.convert_string_to_datetime(text)
+		if (date == (None,"void-date")):
+			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
+					"Date is empty")
+		elif (date == (None,"bad-format")):
+			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
+					"Provided data is not in the correct form (dd/mm/yy)")
+		elif (date == (None,"prior-date")):
+			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
+					"Provided date must be subsequent to the current date")
+		else:
 			task = self._view.get_task()
 			if (task != None):
 				task = list(task)
 				#convertirmos a datetime el string que introduce el usuario
-				task[2] = text
+				task[2] = date[0]
+				task = tuple(task)
+				data = (task[1], task[2], task[3])
+				ok = self._model.edit(task[0], data)
+				if ok != -1:
+					self._view.edit(task[0], data)
+
+	#metodo que se lanza al editar la columna nombre de una tarea
+	def on_task_name_edit(self, widget, position, text):
+		#pasamos la cuadrupla a lista, editamos el valor y lo editamos en modelo
+		#si todo ok, lo editamos en la vista tambien
+		#si el string pasado por el usuario no es valido, ya no se hace nada mas
+		if not (self._model.validate_taskname(text)):
+			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
+				"Task name should not be empty")
+		else:
+			task = self._view.get_task()
+			if (task != None):
+				task = list(task)
+				task[1] = text
 				task = tuple(task)
 				data = (task[1], task[2], task[3])
 				ok = self._model.edit(task[0], data)
@@ -107,34 +100,30 @@ class TaskList_Controller:
 		else:
 			self._view.update_state(True)
 
-	#metodo que se lanza al editar la columna nombre de una tarea
-	def on_task_name_edit(self, widget, position, text):
-		#pasamos la cuadrupla a lista, editamos el valor y lo editamos en modelo
-		#si todo ok, lo editamos en la vista tambien
-		#si el string pasado por el usuario no es valido, ya no se hace nada mas
-		if (self.validate_taskname(text)):
-			task = self._view.get_task()
-			if (task != None):
-				task = list(task)
-				task[1] = text
-				task = tuple(task)
-				data = (task[1], task[2], task[3])
-				ok = self._model.edit(task[0], data)
-				if ok != -1:
-						self._view.edit(task[0], data)
-
 	#metodo que se lanza al añadir una nueva tarea
 	def on_button_add_task_clicked(self, widget):
 		data = self._view.run_dialog_add_prueba()
 		data = list(data)
-		data[1] = self.convert_string_to_datetime(data[1])
-		if (self.validate_taskname(data[0]) & self.validate_taskdate(data[1])):
-			data = tuple(data)
-			task_id = self._model.add(data)
-			if task_id != -1:
-				self._view.add(task_id,data)
-
-
+		date = self._model.convert_string_to_datetime(data[1])
+		if (date == (None,"void-date")):
+			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
+					"Date is empty")
+		elif (date == (None,"bad-format")):
+			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
+					"Provided data is not in the correct form (dd/mm/yy)")
+		elif (date == (None,"prior-date")):
+			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
+					"Provided date must be subsequent to the current date")
+		else:
+			data[1] = date[0]
+			if not (self._model.validate_taskname(data[0])):
+				self._view.run_dialog_provided_data_error("CRITICAL ERROR",
+				"Task name should not be empty")
+			else:
+				data = tuple(data)
+				task_id = self._model.add(data)
+				if task_id != -1:
+					self._view.add(task_id,data)
 
 '''
 Vista
@@ -250,8 +239,6 @@ class TaskList_View:
 		box2.pack_end(self._delete_button, True, True, 0)
 		self._win.show_all()
 
-
-
 		self.hbox1.hide()
 		self.hbox2.hide()
 
@@ -286,7 +273,6 @@ class TaskList_View:
 		self.hbox1.hide()
 		self.hbox2.hide()
 		return data
-
 		
 	def run_dialog_provided_data_error(self, title, secondary_text):
 		dialog = Gtk.MessageDialog(self._win, 0, 
@@ -340,7 +326,7 @@ class TaskList_View:
 		for task in self.store:
 			if task[0] == task_id:
 				self.store.remove(task.iter)
-				return
+				
 	def update_state(self, active):
 		self._delete_button.set_sensitive(active)
 
@@ -401,6 +387,37 @@ class TaskList_Model:
 				self.model_task_list.remove(task)
 				break
 		return done
+
+	#metodo que valida el nombre de una tarea, devuelve True si el valor
+	#introducido por parametro es valido y False en caso contrario
+	def validate_taskname(self, name):
+		if (name == ""):
+			return False
+		return True
+
+
+	#metodo que valida la fecha de una tarea, devuelve True si el valor
+	#introducido por parametro es valido y False en caso contrario
+	def validate_taskdate(self, date):
+		if not (datetime.now() < date):
+			return False
+		return True
+
+	#metodo que intenta pasar un string a datetime, en caso de no poder, lanza un 
+	#dialogo de error
+	def convert_string_to_datetime(self, string_to_convert):
+		if (string_to_convert == ""):
+			return (None,"void-date")
+		else:
+			try:
+				date = (datetime.strptime(string_to_convert, "%d/%m/%y"))
+			except Exception:
+				return (None,"bad-format")
+			validate = self.validate_taskdate(date)
+			if not (validate):
+				return (None, "prior-date")
+			else:
+				return (date, "")
 
 if __name__ == '__main__':
 
