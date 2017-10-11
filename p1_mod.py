@@ -8,6 +8,12 @@ __copyright__  = "GNU General Public Licencse v2"
 
 from datetime import datetime, date, time
 
+import time
+
+import threading
+
+from random import randint
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject
@@ -125,6 +131,18 @@ class TaskList_Controller:
 				if task_id != -1:
 					self._view.add(task_id,data)
 
+	def on_button_sync_clicked(self, widget):
+		self._view.sync_spinner.start()
+		self._view.change_sync_button(False)
+		t = threading.Thread(target = self.sync)
+		t.start()
+
+	def sync(self):
+		prev_status = self._view._sync_label.get_text()
+		self._view.set_sync_label("Synchronizing...\t\t\t\t\t\t")
+		sync_success = self._model.sync()
+		self._view.sync(sync_success, prev_status)
+		self._view.change_sync_button(True)
 '''
 Vista
 '''
@@ -178,7 +196,6 @@ class TaskList_View:
 		self.hbox1.pack_end(self.fechaEntry, True, True, 0)
 		box.pack_end(self.hbox1, True, True, 0)
 		box.pack_end(self.hbox2, True, True, 0)
-		
 
 		self._win.add(box)
 		self.store = Gtk.ListStore(int, str, GObject.TYPE_PYOBJECT, bool)
@@ -237,12 +254,25 @@ class TaskList_View:
 		self._delete_button.get_style_context().add_class('destructive-action')
 		self._delete_button.set_sensitive(False)
 		box2.pack_end(self._delete_button, True, True, 0)
-		self._win.show_all()
 
+		box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+		#box2 = Gtk.Table(3,2,True)
+		self.sync_spinner = Gtk.Spinner()
+		self._sync_label = Gtk.Label("Last sync:  No sync done\t\t\t\t")
+		self._sync_label.set_xalign(0)
+		self._sync_button = Gtk.Button("Synchronize")
+		self._sync_button.set_alignment(1,0)
+		box2.pack_start(self.sync_spinner,False,False,0)
+		box2.pack_start(self._sync_label,False,False,0)
+		box2.pack_start(self._sync_button,True,False,0)
+
+
+		# box2.pack_start(label, True, True, 0)
+		box.pack_start(box2, True, True, 0)
+
+		self._win.show_all()
 		self.hbox1.hide()
 		self.hbox2.hide()
-
-
 
 
 	def connect(self, controller):
@@ -256,7 +286,7 @@ class TaskList_View:
 		#editar la fecha de la tarea
 		self.renderer_date.connect('edited', controller.on_task_date_edit)
 		self.add_task_button.connect('clicked', controller.on_button_add_task_clicked)
-
+		self._sync_button.connect('clicked', controller.on_button_sync_clicked)
 
 
 	#metodo con el que mostramos las dos cajas del fondo
@@ -330,7 +360,24 @@ class TaskList_View:
 	def update_state(self, active):
 		self._delete_button.set_sensitive(active)
 
+	def set_sync_label(self, text):
+		self._sync_label.set_text(text)
 
+	def change_sync_button(self, change):
+		self._sync_button.set_sensitive(change)
+
+	def sync(self, sync_success, prev_status):
+
+		if sync_success:
+			_aux_label = "Last sync: " + time.strftime("%H:%M")
+			self.sync_spinner.stop()
+		else:
+			_aux_label = prev_status
+			self.set_sync_label("ERROR while sync! Check out your connection")
+			self.sync_spinner.stop()
+			time.sleep(5)
+		self.set_sync_label(_aux_label)
+		
 '''
 Modelo
 '''
@@ -387,6 +434,23 @@ class TaskList_Model:
 				self.model_task_list.remove(task)
 				break
 		return done
+
+	def sync(self):
+
+		def get_random():
+			i = randint(1,100)
+			return i
+
+		aux = get_random()
+		if (aux < 50):
+			temp = 80
+			success = False
+		else:
+			temp = 8
+			success = True
+		for i in range (temp):
+			time.sleep(0.2)
+		return success
 
 	#metodo que valida el nombre de una tarea, devuelve True si el valor
 	#introducido por parametro es valido y False en caso contrario
