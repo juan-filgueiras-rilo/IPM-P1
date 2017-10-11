@@ -19,6 +19,9 @@ PENDIENTE:
 	multi selección
 
 	meter una fecha con el día de hoy da error
+	al pulsar enter añadiendo una tarea, que se añada
+
+	al añadir una tarea invalida, se deberia borrar todo o deberia dejarse el dialogo de añadir con los textos puestos?
 	
 
 
