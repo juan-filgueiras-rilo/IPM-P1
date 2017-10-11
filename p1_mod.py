@@ -20,14 +20,21 @@ from gi.repository import Gtk, GLib, GObject
 
 
 _DATE_FORMAT = "%d/%m/%y"
+#Cabecera
+#Notificaciones
 '''
 Controlador
 '''
 
 class TaskList_Controller:
 
+	INITIAL_STATE = {'spinner_running': False,
+					'sync_button': True,
+					'sync_status': "Last sync:  No sync done"}
+
 	def __init__(self):
 		self._view = TaskList_View()
+		self._view.update_state(self.INITIAL_STATE)
 		self._view.connect(self)
 
 	def set_model(self, model):
@@ -106,7 +113,7 @@ class TaskList_Controller:
 			if ok != -1:
 				self._view.edit(task[0], data)
 		else:
-			self._view.update_state(True)
+			self._view.update_delete(True)
 
 	#metodo que se lanza al añadir una nueva tarea
 	def on_button_add_task_clicked(self, widget):
@@ -134,17 +141,27 @@ class TaskList_Controller:
 					self._view.add(task_id,data)
 
 	def on_button_sync_clicked(self, widget):
-		self._view.sync_spinner.start()
-		self._view.change_sync_button(False)
-		t = threading.Thread(target = self.sync)
+		prev_status = self._view._sync_label.get_text()
+		state = {'spinner_running' : True,
+				'sync_button' : False,
+				'sync_status' : "Synchronizing...\t\t\t\t\t\t"}
+		self._view.update_state(state)
+		t = threading.Thread(target = self.sync, args = (prev_status, ))
 		t.start()
 
-	def sync(self):
-		prev_status = self._view._sync_label.get_text()
-		self._view.set_sync_label("Synchronizing...\t\t\t\t\t\t")
+	def sync(self, prev_status):
 		sync_success = self._model.sync()
-		self._view.sync(sync_success, prev_status)
-		self._view.change_sync_button(True)
+		if sync_success:
+			state = {'spinner_running' : False,
+					'sync_button' : True,
+					'sync_status' : "Last sync: " + time.strftime("%H:%M")}
+		else:
+			state =  {'spinner_running' : False,
+					'sync_button' : True,
+					'sync_status' : prev_status,
+					'show_sync_error' : ''}
+		self._view.update_state_on_main_thread(state)
+		
 '''
 Vista
 '''
@@ -166,6 +183,7 @@ class TaskList_View:
 		
 		self._win = Gtk.Window(title="Práctica 1 -- IPM 17/18")
 		# El código sigue los ejemplos del tuto: https://python-gtk-3-tutorial.readthedocs.io/en/latest/index.html
+		#_header_Bar
 		box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
 
 		#metemos los entrys en una caja nueva por el final
@@ -175,8 +193,6 @@ class TaskList_View:
 		self.fechaEntry = Gtk.Entry()
 
 		self.hbox1.pack_start(self.tareaEntry, True, True, 0)
-		
-
 
 		#pendiente de cuadrar mejor
 		#metemos los labels en una caja imnediatamente encima de la anterior
@@ -258,15 +274,14 @@ class TaskList_View:
 		box2.pack_end(self._delete_button, True, True, 0)
 
 		box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-		#box2 = Gtk.Table(3,2,True)
 		self.sync_spinner = Gtk.Spinner()
-		self._sync_label = Gtk.Label("Last sync:  No sync done\t\t\t\t")
+		self._sync_label = Gtk.Label("")
 		self._sync_label.set_xalign(0)
 		self._sync_button = Gtk.Button("Synchronize")
 		self._sync_button.set_alignment(1,0)
 		box2.pack_start(self.sync_spinner,False,False,0)
 		box2.pack_start(self._sync_label,False,False,0)
-		box2.pack_start(self._sync_button,True,False,0)
+		box2.pack_end(self._sync_button,True,False,0)
 
 
 		# box2.pack_start(label, True, True, 0)
@@ -359,26 +374,41 @@ class TaskList_View:
 			if task[0] == task_id:
 				self.store.remove(task.iter)
 				
-	def update_state(self, active):
+	def update_delete(self, active):
 		self._delete_button.set_sensitive(active)
 
-	def set_sync_label(self, text):
+	def update_state_on_main_thread(self, state):
+		GLib.idle_add(self.update_state, state)
+
+	def update_state(self, state):
+		for key, value in state.items():
+			method = getattr(self, 'update_state_'+key, None)
+			if callable(method):
+				method(value, state)
+
+	def update_state_sync_status(self, text, state):
 		self._sync_label.set_text(text)
 
-	def change_sync_button(self, change):
+	def update_state_sync_button(self, change, state):
 		self._sync_button.set_sensitive(change)
 
-	def sync(self, sync_success, prev_status):
-
-		if sync_success:
-			_aux_label = "Last sync: " + time.strftime("%H:%M")
-			self.sync_spinner.stop()
+	def update_state_spinner_running(self,start, state):
+		if start:
+			self.sync_spinner.start()
 		else:
-			_aux_label = prev_status
-			self.set_sync_label("ERROR while sync! Check out your connection")
 			self.sync_spinner.stop()
-			time.sleep(5)
-		self.set_sync_label(_aux_label)
+
+	# def sync(self, sync_success, prev_status):
+
+	# 	if sync_success:
+	# 		_aux_label = "Last sync: " + time.strftime("%H:%M")
+	# 		self.sync_spinner.stop
+	# 	else:
+	# 		_aux_label = prev_status
+	# 		self.update_sync_label,"ERROR while sync! Check out your connection"
+	# 		self.sync_spinner.stop
+	# 		time.sleep(5)
+	# 	self.update_sync_label,_aux_label
 		
 '''
 Modelo
