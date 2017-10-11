@@ -18,6 +18,8 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject
 
+
+_DATE_FORMAT = "%d/%m/%y"
 '''
 Controlador
 '''
@@ -474,7 +476,7 @@ class TaskList_Model:
 			return (None,"void-date")
 		else:
 			try:
-				date = (datetime.strptime(string_to_convert, "%d/%m/%y"))
+				date = (datetime.strptime(string_to_convert, _DATE_FORMAT))
 			except Exception:
 				return (None,"bad-format")
 			validate = self.validate_taskdate(date)
