@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 """ Código base para la práctica de IPM. Existen numerosos fallos de diseño que deben ser corregidos."""
 
@@ -19,7 +20,21 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject
 
 
-_DATE_FORMAT = "%d/%m/%y"
+#internacionalización
+import gettext 
+import locale 
+
+LOCALE_DIR = './locale' 
+APP_NAME = 'p1_mod' 
+
+
+gettext.textdomain(APP_NAME)
+gettext.bindtextdomain(APP_NAME, LOCALE_DIR)
+locale.setlocale(locale.LC_ALL, '') 
+_ = gettext.gettext
+
+
+_DATE_FORMAT = _("%d/%m/%y")
 #Cabecera
 #Notificaciones
 '''
@@ -30,7 +45,7 @@ class TaskList_Controller:
 
 	INITIAL_STATE = {'spinner_running': False,
 					'sync_button': True,
-					'sync_status': "Last sync:  No sync done"}
+					'sync_status': _("Última sincronización: Aún no se ha sincronizado")}
 
 	def __init__(self):
 		self._view = TaskList_View()
@@ -59,14 +74,14 @@ class TaskList_Controller:
 	def on_task_date_edit(self, widget, position, text):
 		date = self._model.convert_string_to_datetime(text)
 		if (date == (None,"void-date")):
-			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
-					"Date is empty")
+			self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
+					_("La fecha está vacía"))
 		elif (date == (None,"bad-format")):
-			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
-					"Provided data is not in the correct form (dd/mm/yy)")
+			self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
+					_("La fecha introducida no está en el formato correcto (dd/mm/yy)"))
 		elif (date == (None,"prior-date")):
-			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
-					"Provided date must be subsequent to the current date")
+			self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
+					_("La fecha introducida tiene que ser posterior a la fecha actual"))
 		else:
 			task = self._view.get_task()
 			if (task != None):
@@ -85,8 +100,8 @@ class TaskList_Controller:
 		#si todo ok, lo editamos en la vista tambien
 		#si el string pasado por el usuario no es valido, ya no se hace nada mas
 		if not (self._model.validate_taskname(text)):
-			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
-				"Task name should not be empty")
+			self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
+				_("El nombre de la tarea no puede estar vacío"))
 		else:
 			task = self._view.get_task()
 			if (task != None):
@@ -100,7 +115,7 @@ class TaskList_Controller:
 
 	#metodo que se lanza al seleccionar la columna hecho        
 	def on_row_selected(self, widget, position, n_column):
-		if (n_column.get_title() == "Hecho"):
+		if (n_column.get_title() == _("Hecho")):
 			task = self._view.get_task()
 			#convertimos a lista y despues reconvertimos a tupla pq las tuplas son
 			#inmutables
@@ -121,19 +136,19 @@ class TaskList_Controller:
 		data = list(data)
 		date = self._model.convert_string_to_datetime(data[1])
 		if (date == (None,"void-date")):
-			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
-					"Date is empty")
+			self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
+					_("La fecha está vacía"))
 		elif (date == (None,"bad-format")):
-			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
-					"Provided data is not in the correct form (dd/mm/yy)")
+			self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
+					_("La fecha introducida no está en el formato correcto (dd/mm/yy)"))
 		elif (date == (None,"prior-date")):
-			self._view.run_dialog_provided_data_error("CRITICAL ERROR",
-					"Provided date must be subsequent to the current date")
+			self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
+					_("El nombre de la tarea no puede estar vacío"))
 		else:
 			data[1] = date[0]
 			if not (self._model.validate_taskname(data[0])):
-				self._view.run_dialog_provided_data_error("CRITICAL ERROR",
-				"Task name should not be empty")
+				self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
+				_("El nombre de la tarea no puede estar vacío"))
 			else:
 				data = tuple(data)
 				task_id = self._model.add(data)
@@ -144,7 +159,7 @@ class TaskList_Controller:
 		prev_status = self._view._sync_label.get_text()
 		state = {'spinner_running' : True,
 				'sync_button' : False,
-				'sync_status' : "Synchronizing...\t\t\t\t\t\t"}
+				'sync_status' : _("Sincronizando...\t\t\t\t\t\t")}
 		self._view.update_state(state)
 		t = threading.Thread(target = self.sync, args = (prev_status, ))
 		t.start()
@@ -154,12 +169,12 @@ class TaskList_Controller:
 		if sync_success:
 			state = {'spinner_running' : False,
 					'sync_button' : True,
-					'sync_status' : "Last sync: " + time.strftime("%H:%M")}
+					'sync_status' : _("Última sincronización: ") + time.strftime("%H:%M")}
 		else:
 			state =  {'spinner_running' : False,
 					'sync_button' : True,
 					'sync_status' : prev_status,
-					'show_sync_error' : "Error while sync"}
+					'show_sync_error' : _("Error sincronizando")}
 		self._view.update_state_on_main_thread(state)
 		
 '''
@@ -180,11 +195,11 @@ class TaskList_View:
 				return 1
 			return 0
 			
-		self._win = Gtk.Window(title="Práctica 1 -- IPM 17/18")
+		self._win = Gtk.Window(title=_("Práctica 1 -- IPM 17/18"))
 		# El código sigue los ejemplos del tuto: https://python-gtk-3-tutorial.readthedocs.io/en/latest/index.html
 		hb = Gtk.HeaderBar()
 		hb.set_show_close_button(True)
-		hb.props.title = "Práctica 1 -- IPM 17/18"
+		hb.props.title = _("Práctica 1 -- IPM 17/18")
 		self._win.set_titlebar(hb)
 		box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
 
@@ -199,12 +214,12 @@ class TaskList_View:
 		#pendiente de cuadrar mejor
 		#metemos los labels en una caja imnediatamente encima de la anterior
 		self.hbox2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing = 8)
-		name_label = Gtk.Label("Nombre de tarea")
+		name_label = Gtk.Label(_("Nombre de la tarea"))
 		name_label.set_xalign(0)
 		name_label.set_max_width_chars(1)
 		self.hbox2.pack_start(name_label, True, True, 0)
 
-		date_label = Gtk.Label("Fecha")
+		date_label = Gtk.Label(_("Fecha"))
 		date_label.set_xalign(0)
 		self.hbox2.pack_start(date_label, True, True, 0)
 		
@@ -241,19 +256,19 @@ class TaskList_View:
 		self.renderer_name = Gtk.CellRendererText()
 		#marcamos la columna entera como editable
 		self.renderer_name.set_property("editable", True)
-		column = Gtk.TreeViewColumn("Tarea", self.renderer_name, text=1)
+		column = Gtk.TreeViewColumn(_("Tarea"), self.renderer_name, text=1)
 		self.tree.append_column(column)
 		column.set_sort_column_id(1)
 		self.renderer_date = Gtk.CellRendererText()
 		#marcamos la columna entera como editable
 		self.renderer_date.set_property("editable", True)
-		column = Gtk.TreeViewColumn("Fecha", self.renderer_date)
+		column = Gtk.TreeViewColumn(_("Fecha"), self.renderer_date)
 		column.set_cell_data_func(self.renderer_date, date_cell_data_func)
 		self.tree.append_column(column)
 		column.set_sort_column_id(2)
 		self.store.set_sort_func(2, compare_date, None)
 		renderer_make = Gtk.CellRendererToggle()
-		column = Gtk.TreeViewColumn("Hecho", renderer_make, active=3)
+		column = Gtk.TreeViewColumn(_("Hecho"), renderer_make, active=3)
 		self.tree.append_column(column)
 		box.pack_end(self.tree, True, True, 0)
 		column.set_sort_column_id(3)
@@ -342,15 +357,15 @@ class TaskList_View:
 		return task
 
 	def exit(self, parent):
-		dialog = Gtk.Dialog("WARNING", parent, Gtk.DialogFlags.DESTROY_WITH_PARENT, 
+		dialog = Gtk.Dialog(_("¡ATENCIÓN!"), parent, Gtk.DialogFlags.DESTROY_WITH_PARENT, 
 				(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, 
 				Gtk.STOCK_OK, Gtk.ResponseType.OK))
 		vbox = Gtk.VBox(spacing = 10)
 		dialog.get_content_area().add(vbox)
 					
-		etiqueta1 = Gtk.Label("Do you want to close application?")
+		etiqueta1 = Gtk.Label(_("¿Quieres cerrar la aplicación?"))
 
-		etiqueta2 = Gtk.Label("If you don't cancel, application will close")
+		etiqueta2 = Gtk.Label(_("Si no se cancela, la aplicación se cerrará"))
 		vbox.pack_start(etiqueta1, True, True, 0)
 		vbox.pack_start(etiqueta2, True, True, 0)
 		vbox.show_all()
@@ -408,7 +423,7 @@ class TaskList_View:
 		dialog = Gtk.MessageDialog(self._win, 0, 
 			Gtk.MessageType.INFO, Gtk.ButtonsType.OK, 
 			title)
-		dialog.format_secondary_text("Couldn't connect to server!")
+		dialog.format_secondary_text(_("¡No se puede conectar con el servidor!"))
 		dialog.run()
 		dialog.destroy()		
 		

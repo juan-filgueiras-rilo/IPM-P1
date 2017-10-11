@@ -1,0 +1,95 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-11 20:01+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: p1_mod.py:37
+msgid "%d/%m/%y"
+msgstr ""
+
+#: p1_mod.py:48
+msgid "Última sincronización: Aún no se ha sincronizado"
+msgstr ""
+
+#: p1_mod.py:77 p1_mod.py:80 p1_mod.py:83 p1_mod.py:103 p1_mod.py:139
+#: p1_mod.py:142 p1_mod.py:145 p1_mod.py:150
+msgid "ERROR CRÍTICO"
+msgstr ""
+
+#: p1_mod.py:78 p1_mod.py:140
+msgid "La fecha está vacía"
+msgstr ""
+
+#: p1_mod.py:81 p1_mod.py:143
+msgid "La fecha introducida no está en el formato correcto (dd/mm/yy)"
+msgstr ""
+
+#: p1_mod.py:84
+msgid "La fecha introducida tiene que ser posterior a la fecha actual"
+msgstr ""
+
+#: p1_mod.py:104 p1_mod.py:146 p1_mod.py:151
+msgid "El nombre de la tarea no puede estar vacío"
+msgstr ""
+
+#: p1_mod.py:118 p1_mod.py:271
+msgid "Hecho"
+msgstr ""
+
+#: p1_mod.py:162
+msgid "Sincronizando...\t\t\t\t\t\t"
+msgstr ""
+
+#: p1_mod.py:172
+msgid "Última sincronización: "
+msgstr ""
+
+#: p1_mod.py:177
+msgid "Error sincronizando"
+msgstr ""
+
+#: p1_mod.py:198 p1_mod.py:202
+msgid "Práctica 1 -- IPM 17/18"
+msgstr ""
+
+#: p1_mod.py:217
+msgid "Nombre de la tarea"
+msgstr ""
+
+#: p1_mod.py:222 p1_mod.py:265
+msgid "Fecha"
+msgstr ""
+
+#: p1_mod.py:259
+msgid "Tarea"
+msgstr ""
+
+#: p1_mod.py:360
+msgid "¡ATENCIÓN!"
+msgstr ""
+
+#: p1_mod.py:366
+msgid "¿Quieres cerrar la aplicación?"
+msgstr ""
+
+#: p1_mod.py:368
+msgid "Si no se cancela, la aplicación se cerrará"
+msgstr ""
+
+#: p1_mod.py:426
+msgid "¡No se puede conectar con el servidor!"
+msgstr ""

@@ -1,0 +1,95 @@
+# English translations for p package.
+# Copyright (C) 2017 THE p'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the p package.
+# wifopc <wifo92@gmail.com>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: p 1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-11 20:01+0200\n"
+"PO-Revision-Date: 2017-10-11 20:01+0200\n"
+"Last-Translator: wifopc <wifo92@gmail.com>\n"
+"Language-Team: English\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: p1_mod.py:37
+msgid "%d/%m/%y"
+msgstr "%m/%d/%y"
+
+#: p1_mod.py:48
+msgid "Última sincronización: Aún no se ha sincronizado"
+msgstr "Last sync:  No sync done"
+
+#: p1_mod.py:77 p1_mod.py:80 p1_mod.py:83 p1_mod.py:103 p1_mod.py:139
+#: p1_mod.py:142 p1_mod.py:145 p1_mod.py:150
+msgid "ERROR CRÍTICO"
+msgstr "CRITICAL ERROR"
+
+#: p1_mod.py:78 p1_mod.py:140
+msgid "La fecha está vacía"
+msgstr "Date is empty"
+
+#: p1_mod.py:81 p1_mod.py:143
+msgid "La fecha introducida no está en el formato correcto (dd/mm/yy)"
+msgstr "Provided data is not in the correct form (mm/dd/yy)"
+
+#: p1_mod.py:84
+msgid "La fecha introducida tiene que ser posterior a la fecha actual"
+msgstr "Provided date must be subsequent to the current date"
+
+#: p1_mod.py:104 p1_mod.py:146 p1_mod.py:151
+msgid "El nombre de la tarea no puede estar vacío"
+msgstr "Task name should not be empty"
+
+#: p1_mod.py:118 p1_mod.py:271
+msgid "Hecho"
+msgstr "Done"
+
+#: p1_mod.py:162
+msgid "Sincronizando...\t\t\t\t\t\t"
+msgstr "Synchronizing...\t\t\t\t\t\t"
+
+#: p1_mod.py:172
+msgid "Última sincronización: "
+msgstr "Last sync: "
+
+#: p1_mod.py:177
+msgid "Error sincronizando"
+msgstr "Error while sync"
+
+#: p1_mod.py:198 p1_mod.py:202
+msgid "Práctica 1 -- IPM 17/18"
+msgstr "Practise 1 -- IPM 17/18"
+
+#: p1_mod.py:217
+msgid "Nombre de la tarea"
+msgstr "Task name"
+
+#: p1_mod.py:222 p1_mod.py:265
+msgid "Fecha"
+msgstr "Date"
+
+#: p1_mod.py:259
+msgid "Tarea"
+msgstr "Task"
+
+#: p1_mod.py:360
+msgid "¡ATENCIÓN!"
+msgstr "WARNING"
+
+#: p1_mod.py:366
+msgid "¿Quieres cerrar la aplicación?"
+msgstr "Do you want to close application?"
+
+#: p1_mod.py:368
+msgid "Si no se cancela, la aplicación se cerrará"
+msgstr "If you don't cancel, application will close"
+
+#: p1_mod.py:426
+msgid "¡No se puede conectar con el servidor!"
+msgstr "Couldn't connect to server!"
