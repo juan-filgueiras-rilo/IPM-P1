@@ -180,10 +180,12 @@ class TaskList_View:
 				return 1
 			return 0
 			
-		
 		self._win = Gtk.Window(title="Práctica 1 -- IPM 17/18")
 		# El código sigue los ejemplos del tuto: https://python-gtk-3-tutorial.readthedocs.io/en/latest/index.html
-		#_header_Bar
+		hb = Gtk.HeaderBar()
+		hb.set_show_close_button(True)
+		hb.props.title = "Práctica 1 -- IPM 17/18"
+		self._win.set_titlebar(hb)
 		box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
 
 		#metemos los entrys en una caja nueva por el final
@@ -263,24 +265,29 @@ class TaskList_View:
 		box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
 		box.pack_start(box2, True, True, 0)
 
-		self._add_button = Gtk.Button(label="Añadir")
+		self._add_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_ADD,1)
 		self._add_button.get_style_context().add_class('suggestive-action')
-		box2.pack_end(self._add_button, True, True, 0)
+		#box2.pack_end(self._add_button, True, True, 0)
+		hb.pack_end(self._add_button)
 
-		self._delete_button = Gtk.Button(label="Eliminar")
+		self._delete_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_REMOVE,1)
 		self._delete_button.get_style_context().add_class('destructive-action')
 		self._delete_button.set_sensitive(False)
-		box2.pack_end(self._delete_button, True, True, 0)
+		#box2.pack_end(self._delete_button, True, True, 0)
+		hb.pack_end(self._delete_button)
 
 		box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
 		self.sync_spinner = Gtk.Spinner()
 		self._sync_label = Gtk.Label("")
 		self._sync_label.set_xalign(0)
-		self._sync_button = Gtk.Button("Synchronize")
+		self._sync_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_REFRESH,1)
 		self._sync_button.set_alignment(1,0)
+
 		box2.pack_start(self.sync_spinner,False,False,0)
 		box2.pack_start(self._sync_label,False,False,0)
-		box2.pack_end(self._sync_button,True,False,0)
+		#box2.pack_end(self._sync_button,True,False,0)
+		hb.pack_end(self._sync_button)
+
 
 		# box2.pack_start(label, True, True, 0)
 		box.pack_start(box2, True, True, 0)
@@ -391,8 +398,10 @@ class TaskList_View:
 
 	def update_state_spinner_running(self, start, state):
 		if start:
+			self.sync_spinner.show()
 			self.sync_spinner.start()
 		else:
+			self.sync_spinner.hide()
 			self.sync_spinner.stop()
 
 	def update_state_show_sync_error(self, title, state):
@@ -402,18 +411,6 @@ class TaskList_View:
 		dialog.format_secondary_text("Couldn't connect to server!")
 		dialog.run()
 		dialog.destroy()		
-
-	# def sync(self, sync_success, prev_status):
-
-	# 	if sync_success:
-	# 		_aux_label = "Last sync: " + time.strftime("%H:%M")
-	# 		self.sync_spinner.stop
-	# 	else:
-	# 		_aux_label = prev_status
-	# 		self.update_sync_label,"ERROR while sync! Check out your connection"
-	# 		self.sync_spinner.stop
-	# 		time.sleep(5)
-	# 	self.update_sync_label,_aux_label
 		
 '''
 Modelo
