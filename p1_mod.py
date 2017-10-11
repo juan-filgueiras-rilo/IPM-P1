@@ -159,7 +159,7 @@ class TaskList_Controller:
 			state =  {'spinner_running' : False,
 					'sync_button' : True,
 					'sync_status' : prev_status,
-					'show_sync_error' : ''}
+					'show_sync_error' : "Error while sync"}
 		self._view.update_state_on_main_thread(state)
 		
 '''
@@ -260,7 +260,6 @@ class TaskList_View:
 		# #
 		#
 
-
 		box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
 		box.pack_start(box2, True, True, 0)
 
@@ -283,14 +282,12 @@ class TaskList_View:
 		box2.pack_start(self._sync_label,False,False,0)
 		box2.pack_end(self._sync_button,True,False,0)
 
-
 		# box2.pack_start(label, True, True, 0)
 		box.pack_start(box2, True, True, 0)
 
 		self._win.show_all()
 		self.hbox1.hide()
 		self.hbox2.hide()
-
 
 	def connect(self, controller):
 		#self._exit_button.connect('clicked', controller.on_button_exit_clicked)
@@ -392,11 +389,19 @@ class TaskList_View:
 	def update_state_sync_button(self, change, state):
 		self._sync_button.set_sensitive(change)
 
-	def update_state_spinner_running(self,start, state):
+	def update_state_spinner_running(self, start, state):
 		if start:
 			self.sync_spinner.start()
 		else:
 			self.sync_spinner.stop()
+
+	def update_state_show_sync_error(self, title, state):
+		dialog = Gtk.MessageDialog(self._win, 0, 
+			Gtk.MessageType.INFO, Gtk.ButtonsType.OK, 
+			title)
+		dialog.format_secondary_text("Couldn't connect to server!")
+		dialog.run()
+		dialog.destroy()		
 
 	# def sync(self, sync_success, prev_status):
 
