@@ -241,7 +241,7 @@ class TaskList_View:
 		self.store.append([104,"Recoger ropa del tinte", date.today(), False])
 		self.store.append([105,"Regalo cumpleaños Nico", date(2018,1,1), False])
 		self.store.append([106,"Devolver libro a la biblioteca", date(2018,2,12), True])
-		self.store.append([107,"Ordenar el congelador", date(2017,9,12), False])
+		self.store.append([107,"Ordenar el congelador", date(2017,9,17), False])
 		self.store.append([108,"Lavar las cortinas", date(2017,10,1), False])
 		self.store.append([109,"Organizar el cajón de los mandos", date(2017,10,5), False])
 		self.store.append([110,"Poner flores en las jardineras", date.today(), False])

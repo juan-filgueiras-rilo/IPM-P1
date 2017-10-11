@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: p 1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-11 20:01+0200\n"
-"PO-Revision-Date: 2017-10-11 20:01+0200\n"
+"POT-Creation-Date: 2017-10-11 20:59+0200\n"
+"PO-Revision-Date: 2017-10-11 20:59+0200\n"
 "Last-Translator: wifopc <wifo92@gmail.com>\n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: p1_mod.py:37
 msgid "%d/%m/%y"
-msgstr "%m/%d/%y"
+msgstr "%m/%d/%Y"
 
 #: p1_mod.py:48
 msgid "Última sincronización: Aún no se ha sincronizado"
@@ -36,7 +36,7 @@ msgstr "Date is empty"
 
 #: p1_mod.py:81 p1_mod.py:143
 msgid "La fecha introducida no está en el formato correcto (dd/mm/yy)"
-msgstr "Provided data is not in the correct form (mm/dd/yy)"
+msgstr "Provided data is not in the correct form (mm/dd/yyyy)"
 
 #: p1_mod.py:84
 msgid "La fecha introducida tiene que ser posterior a la fecha actual"
