@@ -165,6 +165,7 @@ class TaskList_Controller:
 				data = tuple(data)
 				task_id = self._model.add(data)
 				if task_id != -1:
+					self._view.remove_entry_text()
 					self._view.add(task_id,data)
 
 	def on_button_sync_clicked(self, widget):
@@ -388,10 +389,10 @@ class TaskList_View:
 	#metodo con el que añadimos la tarea a la vista y al modelo
 	def run_dialog_add_prueba(self):
 		data = (self.tareaEntry.get_text(), self.fechaEntry.get_text(),False)
-		self.tareaEntry.set_text("")
-		self.fechaEntry.set_text("")
-		self.hbox1.hide()
-		self.hbox2.hide()
+		# self.tareaEntry.set_text("")
+		# self.fechaEntry.set_text("")
+		# self.hbox1.hide()
+		# self.hbox2.hide()
 		return data
 		
 	def run_dialog_provided_data_error(self, title, secondary_text):
@@ -496,7 +497,13 @@ class TaskList_View:
 			title)
 		dialog.format_secondary_text(_("¡No se puede conectar con el servidor!"))
 		dialog.run()
-		dialog.destroy()		
+		dialog.destroy()
+
+	def remove_entry_text(self):
+		self.tareaEntry.set_text("")
+		self.fechaEntry.set_text("")
+		self.hbox1.hide()
+		self.hbox2.hide()		
 		
 '''
 Modelo
