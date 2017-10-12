@@ -156,7 +156,7 @@ class TaskList_Controller:
 					_("La fecha introducida no está en el formato correcto (dd/mm/yy)"))
 		elif (date == (None,"prior-date")):
 			self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
-					_("El nombre de la tarea no puede estar vacío"))
+					_("La fecha introducida tiene que ser posterior a la fecha actual"))
 		else:
 			data[1] = date[0]
 			if not (self._model.validate_taskname(data[0])):
@@ -213,6 +213,17 @@ class TaskList_Controller:
 			self._view.update_date_buffer(True)
 		else:
 			self._view.update_date_buffer(False)
+
+	def on_supr_pressed(self, entry, eventkey):
+		if ((eventkey.get_keyval()[1] == 65535)):
+			self.on_button_remove_clicked(entry)
+
+
+	def on_focus_out_treeview(self, uno, dos):
+		# print("Hola") 
+		# print(uno)
+		# print(dos)
+		self._view.update_delete(False)
 
 		
 '''
@@ -405,6 +416,9 @@ class TaskList_View:
 		self.fechaEntry.connect('key-press-event', controller.on_key_pressed)
 		self.tareaEntry.connect('changed', controller.on_tarea_entry_changed)
 		self.fechaEntry.connect('changed', controller.on_fecha_entry_changed)
+		self.tree.connect('key-press-event', controller.on_supr_pressed)
+		#self.tree.connect('focus', controller.on_focus_activated)
+		#self.tree.connect('focus-out-event', controller.on_focus_out_treeview)
 
 
 	#metodo con el que mostramos las dos cajas del fondo
