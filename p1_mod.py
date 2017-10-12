@@ -60,11 +60,19 @@ class TaskList_Controller:
 		self._view.run_dialog_add()
 
 	def on_button_remove_clicked(self, widget):
-		task = self._view.get_task()
-		if task != None:
-			ok = self._model.remove(task[0])
-			if ok != -1:
-				self._view.remove(task[0])
+		# task = self._view.get_task()
+		# if task != None:
+		# 	ok = self._model.remove(task[0])
+		# 	if ok != -1:
+		# 		self._view.remove(task[0])
+		tasklist = self._view.get_tasks()
+		for i in range (len(tasklist)):
+			if (tasklist[i] != None):
+				ok = self._model.remove(tasklist[i][0])
+				if (ok != -1):
+					self._view.remove(tasklist[i][0])
+
+
 
 	def on_button_exit_clicked(self, widget, event):
 		signal = self._view.exit(widget.get_toplevel())
@@ -83,7 +91,8 @@ class TaskList_Controller:
 			self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
 					_("La fecha introducida tiene que ser posterior a la fecha actual"))
 		else:
-			task = self._view.get_task()
+			#task = self._view.get_task()
+			task = self._view.get_tasks()[0]
 			if (task != None):
 				task = list(task)
 				#convertirmos a datetime el string que introduce el usuario
@@ -99,11 +108,13 @@ class TaskList_Controller:
 		#pasamos la cuadrupla a lista, editamos el valor y lo editamos en modelo
 		#si todo ok, lo editamos en la vista tambien
 		#si el string pasado por el usuario no es valido, ya no se hace nada mas
+		tasklist = self._view.get_tasks()
 		if not (self._model.validate_taskname(text)):
 			self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
 				_("El nombre de la tarea no puede estar vacío"))
 		else:
-			task = self._view.get_task()
+			#task = self._view.get_task()
+			task = self._view.get_tasks()[0]
 			if (task != None):
 				task = list(task)
 				task[1] = text
@@ -116,7 +127,8 @@ class TaskList_Controller:
 	#metodo que se lanza al seleccionar la columna hecho        
 	def on_row_selected(self, widget, position, n_column):
 		if (n_column.get_title() == _("Hecho")):
-			task = self._view.get_task()
+			#task = self._view.get_task()
+			task = self._view.get_tasks()[0]
 			#convertimos a lista y despues reconvertimos a tupla pq las tuplas son
 			#inmutables
 			task = list(task)
@@ -234,6 +246,7 @@ class TaskList_View:
 
 		self._win.add(box)
 		self.store = Gtk.ListStore(int, str, GObject.TYPE_PYOBJECT, bool)
+		self.store
 		self.store.append([100,"Llevar coche al taller", date.today(), False])
 		self.store.append([101,"Lavar el coche", date(2017, 8, 1), False])
 		self.store.append([102,"Pagar el seguro", date(2017,1,1), False])
@@ -251,6 +264,11 @@ class TaskList_View:
 		#activamos que la activación de una fila se produzca en un simple click en vez 
 		#de doble click
 		self.tree.set_activate_on_single_click(True)
+
+
+		#seleccion multiple
+		self.tree.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE)
+		
 		#diferenciamos entre el renderer del nombre y de la fecha pq a la hora de editar
 		#seran eventos diferentes
 		self.renderer_name = Gtk.CellRendererText()
@@ -355,6 +373,23 @@ class TaskList_View:
 		if treeiter != None:
 			task = self.store.get(treeiter,0,1,2,3)
 		return task
+
+	def get_tasks(self):
+		tasklist = []
+		#devuelve liststore y treepaths
+		selection = self.tree.get_selection().get_selected_rows()
+		# print (selection)
+
+		lliststore, treepaths = selection
+		for i in range (len(treepaths)):
+			treeiter = lliststore.get_iter(treepaths[i])
+			# print(i)
+			if treeiter != None:
+				task = self.store.get(treeiter, 0, 1, 2, 3)
+				tasklist.append(task)
+				# print(task)
+		# print(len(tasklist))
+		return tasklist
 
 	def exit(self, parent):
 		dialog = Gtk.Dialog(_("¡ATENCIÓN!"), parent, Gtk.DialogFlags.DESTROY_WITH_PARENT, 
