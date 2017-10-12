@@ -188,6 +188,11 @@ class TaskList_Controller:
 					'sync_status' : prev_status,
 					'show_sync_error' : _("Error sincronizando")}
 		self._view.update_state_on_main_thread(state)
+
+	def on_key_pressed(self, entry, eventkey):
+		if (eventkey.get_keyval()[1] == 65293):
+			self.on_button_add_task_clicked(entry)
+
 		
 '''
 Vista
@@ -370,6 +375,8 @@ class TaskList_View:
 		self.renderer_date.connect('edited', controller.on_task_date_edit)
 		self.add_task_button.connect('clicked', controller.on_button_add_task_clicked)
 		self._sync_button.connect('clicked', controller.on_button_sync_clicked)
+		self.tareaEntry.connect('key-press-event', controller.on_key_pressed)
+		self.fechaEntry.connect('key-press-event', controller.on_key_pressed)
 
 
 	#metodo con el que mostramos las dos cajas del fondo

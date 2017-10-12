@@ -15,12 +15,12 @@ HECHO:
 	10 - las tareas no se pueden añadir como hechas
 	fijar tamaño de los botones añadir y eliminar
 	multi selección 
+	al pulsar enter añadiendo una tarea, que se añada
 
 PENDIENTE:
 	
 
 	meter una fecha con el día de hoy da error
-	al pulsar enter añadiendo una tarea, que se añada
 
 	al añadir una tarea invalida, se deberia borrar todo o deberia dejarse el dialogo de añadir con los textos puestos?
 	
