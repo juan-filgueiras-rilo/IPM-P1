@@ -215,6 +215,10 @@ class TaskList_View:
 		self._win.set_titlebar(hb)
 		box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
 
+		# print(box.get_homogeneous())
+		# box.set_homogeneous(True)
+		# print(box.get_homogeneous())
+
 		#metemos los entrys en una caja nueva por el final
 		self.hbox1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
 		
@@ -274,29 +278,48 @@ class TaskList_View:
 		self.renderer_name = Gtk.CellRendererText()
 		#marcamos la columna entera como editable
 		self.renderer_name.set_property("editable", True)
+		#centramos el texto que irá dentro de la columna
+		self.renderer_name.set_alignment(0.5, 0)
 		column = Gtk.TreeViewColumn(_("Tarea"), self.renderer_name, text=1)
+		#permitimos que la columna se pueda expandir
+		column.set_expand(True)
+		#centramos el texto del título de la columna
+		column.set_alignment(0.5)
 		self.tree.append_column(column)
 		column.set_sort_column_id(1)
 		self.renderer_date = Gtk.CellRendererText()
 		#marcamos la columna entera como editable
 		self.renderer_date.set_property("editable", True)
+		#centramos el texto que irá dentro de la columna
+		self.renderer_date.set_alignment(0.5, 0)
 		column = Gtk.TreeViewColumn(_("Fecha"), self.renderer_date)
+		#permitimos que la columna se pueda expandir
+		column.set_expand(True)
+		#centramos el texto del título de la columna
+		column.set_alignment(0.5)
 		column.set_cell_data_func(self.renderer_date, date_cell_data_func)
 		self.tree.append_column(column)
 		column.set_sort_column_id(2)
 		self.store.set_sort_func(2, compare_date, None)
 		renderer_make = Gtk.CellRendererToggle()
 		column = Gtk.TreeViewColumn(_("Hecho"), renderer_make, active=3)
+		#permitimos que la columna se pueda expandir
+		column.set_expand(True)
+		#centramos el texto del título de la columna
+		column.set_alignment(0.5)
 		self.tree.append_column(column)
+		#self.tree.set_headers_visible(False)
 		box.pack_end(self.tree, True, True, 0)
 		column.set_sort_column_id(3)
+
+
 
 		#
 		# #
 		#
 
-		box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-		box.pack_start(box2, True, True, 0)
+		# box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+		# box.pack_start(box2, True, True, 0)
 
 		self._add_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_ADD,1)
 		self._add_button.get_style_context().add_class('suggestive-action')
@@ -312,18 +335,24 @@ class TaskList_View:
 		box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
 		self.sync_spinner = Gtk.Spinner()
 		self._sync_label = Gtk.Label("")
-		self._sync_label.set_xalign(0)
+
 		self._sync_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_REFRESH,1)
 		self._sync_button.set_alignment(1,0)
 
 		box2.pack_start(self.sync_spinner,False,False,0)
-		box2.pack_start(self._sync_label,False,False,0)
-		#box2.pack_end(self._sync_button,True,False,0)
+		#lo alineamos casi abajo del todo
+		self._sync_label.set_alignment(0.5, 0.8)
+		#dejamos un poco de espacio por arriba y por abajo para que no
+		#se vea tan pequeño
+		self._sync_label.set_size_request(0, 30)
+		box2.pack_start(self._sync_label, True, True, 0)
 		hb.pack_end(self._sync_button)
 
 
 		# box2.pack_start(label, True, True, 0)
-		box.pack_start(box2, True, True, 0)
+		box2.set_hexpand(False)
+		box2.set_vexpand(False)
+		box.pack_start(box2, False, False, 0)
 
 		self._win.show_all()
 		self.hbox1.hide()
