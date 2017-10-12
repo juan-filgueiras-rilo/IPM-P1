@@ -256,13 +256,13 @@ class TaskList_View:
 		#pendiente de cuadrar mejor
 		#metemos los labels en una caja imnediatamente encima de la anterior
 		self.hbox2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing = 8)
-		name_label = Gtk.Label(_("Nombre de la tarea"))
-		name_label.set_xalign(0.3)
+		name_label = Gtk.Label(_("Nombre"))
+		name_label.set_xalign(0.5)
 		name_label.set_max_width_chars(1)
 		self.hbox2.pack_start(name_label, True, True, 0)
 
 		date_label = Gtk.Label(_("Fecha"))
-		date_label.set_xalign(0)
+		date_label.set_xalign(0.2)
 		self.hbox2.pack_start(date_label, True, True, 0)
 		
 		#self.add_task_button = Gtk.Button(label="+")
