@@ -57,6 +57,7 @@ class TaskList_Controller:
 
 	#llamamos al metodo que muestra las cajas en la vista
 	def on_button_add_clicked(self, widget):
+		self._view.update_add(False)
 		self._view.run_dialog_add()
 
 	def on_button_remove_clicked(self, widget):
@@ -166,6 +167,8 @@ class TaskList_Controller:
 				task_id = self._model.add(data)
 				if task_id != -1:
 					self._view.remove_entry_text()
+					self._view.update_add(True)
+					self._view.update_add_task(False)
 					self._view.add(task_id,data)
 
 	def on_button_sync_clicked(self, widget):
@@ -191,8 +194,25 @@ class TaskList_Controller:
 		self._view.update_state_on_main_thread(state)
 
 	def on_key_pressed(self, entry, eventkey):
-		if (eventkey.get_keyval()[1] == 65293):
-			self.on_button_add_task_clicked(entry)
+		#se añade la tarea al pulsar la tecla enter solo si hay buffer en ambos entrys
+		if ((eventkey.get_keyval()[1] == 65293) 
+				& (self._view.get_name_buffer_has_text()) 
+				& (self._view.get_date_buffer_has_text())):
+			self.on_button_add_task_clicked(entry)	
+
+	def on_tarea_entry_changed(self, entry):
+		length = entry.get_buffer().get_length()
+		if (length > 0):
+			self._view.update_name_buffer(True)
+		else:
+			self._view.update_name_buffer(False)
+
+	def on_fecha_entry_changed(self, entry):
+		length = entry.get_buffer().get_length()
+		if (length > 0):
+			self._view.update_date_buffer(True)
+		else:
+			self._view.update_date_buffer(False)
 
 		
 '''
@@ -237,7 +257,7 @@ class TaskList_View:
 		#metemos los labels en una caja imnediatamente encima de la anterior
 		self.hbox2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing = 8)
 		name_label = Gtk.Label(_("Nombre de la tarea"))
-		name_label.set_xalign(0)
+		name_label.set_xalign(0.3)
 		name_label.set_max_width_chars(1)
 		self.hbox2.pack_start(name_label, True, True, 0)
 
@@ -245,14 +265,16 @@ class TaskList_View:
 		date_label.set_xalign(0)
 		self.hbox2.pack_start(date_label, True, True, 0)
 		
-		self.add_task_button = Gtk.Button(label="+")
+		#self.add_task_button = Gtk.Button(label="+")
+		self.add_task_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_ADD,1)
+		self.add_task_button.set_sensitive(False)
 		#self.add_task_button.set_sensitive(False)
 		#box2.pack_end(self._delete_button, True, True, 0)
 
 		self.hbox1.pack_end(self.add_task_button, True, True, 0)
 		self.hbox1.pack_end(self.fechaEntry, True, True, 0)
-		box.pack_end(self.hbox1, True, True, 0)
-		box.pack_end(self.hbox2, True, True, 0)
+		box.pack_end(self.hbox1, False, False, 0)
+		box.pack_end(self.hbox2, False, False, 0)
 
 		self._win.add(box)
 		self.store = Gtk.ListStore(int, str, GObject.TYPE_PYOBJECT, bool)
@@ -364,6 +386,9 @@ class TaskList_View:
 		self.hbox1.hide()
 		self.hbox2.hide()
 
+		self.name_buffer_has_text = False
+		self.date_buffer_has_text = False
+
 	def connect(self, controller):
 		#self._exit_button.connect('clicked', controller.on_button_exit_clicked)
 		self._win.connect("delete-event", controller.on_button_exit_clicked)
@@ -378,6 +403,8 @@ class TaskList_View:
 		self._sync_button.connect('clicked', controller.on_button_sync_clicked)
 		self.tareaEntry.connect('key-press-event', controller.on_key_pressed)
 		self.fechaEntry.connect('key-press-event', controller.on_key_pressed)
+		self.tareaEntry.connect('changed', controller.on_tarea_entry_changed)
+		self.fechaEntry.connect('changed', controller.on_fecha_entry_changed)
 
 
 	#metodo con el que mostramos las dos cajas del fondo
@@ -385,6 +412,13 @@ class TaskList_View:
 		self.hbox1.show_all()
 		self.hbox2.show_all()
 		
+	
+
+	def get_name_buffer_has_text(self):
+		return self.name_buffer_has_text
+
+	def get_date_buffer_has_text(self):
+		return self.date_buffer_has_text
 
 	#metodo con el que añadimos la tarea a la vista y al modelo
 	def run_dialog_add_prueba(self):
@@ -467,6 +501,21 @@ class TaskList_View:
 				
 	def update_delete(self, active):
 		self._delete_button.set_sensitive(active)
+
+	def update_name_buffer(self, active):
+		self.name_buffer_has_text = active
+		self.update_add_task(self.get_name_buffer_has_text() & self.get_date_buffer_has_text())
+
+	def update_date_buffer(self, active):
+		self.date_buffer_has_text = active
+		self.update_add_task(self.get_name_buffer_has_text() & self.get_date_buffer_has_text())
+
+
+	def update_add(self, active):
+		self._add_button.set_sensitive(active)
+
+	def update_add_task(self, active):
+		self.add_task_button.set_sensitive(active)
 
 	def update_state_on_main_thread(self, state):
 		GLib.idle_add(self.update_state, state)
