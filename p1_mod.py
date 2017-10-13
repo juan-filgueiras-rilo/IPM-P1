@@ -283,15 +283,15 @@ class TaskList_View:
 		self.store = Gtk.ListStore(int, str, GObject.TYPE_PYOBJECT, bool)
 		self.store
 		self.store.append([100,"Llevar coche al taller", datetime.today(), False])
-		self.store.append([101,"Lavar el coche", datetime(2017, 8, 1), False])
-		self.store.append([102,"Pagar el seguro", datetime(2017,1,1), False])
+		self.store.append([101,"Lavar el coche", datetime.today(), False])
+		self.store.append([102,"Pagar el seguro", datetime.today(), False])
 		self.store.append([103,"Arreglar mando garaje", datetime.today(), False])
 		self.store.append([104,"Recoger ropa del tinte", datetime.today(), False])
-		self.store.append([105,"Regalo cumpleaños Nico", datetime(2018,1,1), False])
-		self.store.append([106,"Devolver libro a la biblioteca", datetime(2018,2,12), True])
-		self.store.append([107,"Ordenar el congelador", datetime(2017,9,17), False])
-		self.store.append([108,"Lavar las cortinas", datetime(2017,10,1), False])
-		self.store.append([109,"Organizar el cajón de los mandos", datetime(2017,10,5), False])
+		self.store.append([105,"Regalo cumpleaños Nico", datetime.today(), False])
+		self.store.append([106,"Devolver libro a la biblioteca", datetime.today(), True])
+		self.store.append([107,"Ordenar el congelador", datetime.today(), False])
+		self.store.append([108,"Lavar las cortinas", datetime.today(), False])
+		self.store.append([109,"Organizar el cajón de los mandos", datetime.today(), False])
 		self.store.append([110,"Poner flores en las jardineras", datetime.today(), False])
 
 		#se crea un treeview sobre la lista store
@@ -304,8 +304,7 @@ class TaskList_View:
 
 
 		#seleccion multiple
-		self.tree.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE)
-		self.tree.set_rubber_banding(True)
+		self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
 		
 		#diferenciamos entre el renderer del nombre y de la fecha pq a la hora de editar
 		#seran eventos diferentes
@@ -344,8 +343,6 @@ class TaskList_View:
 		self.tree.append_column(column)
 		#self.tree.set_headers_visible(False)
 		column.set_sort_column_id(3)
-
-
 		#barra superior
 
 		#creamos los elementos
@@ -370,12 +367,6 @@ class TaskList_View:
 		self.menu.append(self.delete_done_tasks)
 		self.menu_button.set_popup(self.menu)
 		self.delete_all.set_sensitive(False)
-
-
-
-
-
-
 
 		#espacio donde irá el sync label y sync spinner
 		box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
@@ -504,7 +495,7 @@ class TaskList_View:
 
 	def get_task(self):
 		task = None
-		selection = self.tree.get_selection()
+		selection = self.selection
 		treeiter = selection.get_selected()[1]
 		if treeiter != None:
 			task = self.store.get(treeiter,0,1,2,3)
@@ -513,7 +504,7 @@ class TaskList_View:
 	def get_tasks(self):
 		tasklist = []
 		#devuelve liststore y treepaths
-		selection = self.tree.get_selection().get_selected_rows()
+		selection = self.selection.get_selected_rows()
 		# print (selection)
 
 		lliststore, treepaths = selection
@@ -655,10 +646,8 @@ class TaskList_View:
 		return self.store
 
 	def remove_selection(self):
-		self.tree.get_selection().unselect_all()
+		self.selection.unselect_all()
 		self.update_delete(False)
-
-
 		
 '''
 Modelo
@@ -669,17 +658,17 @@ class TaskList_Model:
 	def __init__(self):
 		self.ID = 0
 		self.model_task_list = []
-		self.model_task_list.append([100,"Llevar coche al taller", date.today(), False])
-		self.model_task_list.append([101,"Lavar el coche", date(2017, 8, 1), False])
-		self.model_task_list.append([102,"Pagar el seguro", date(2017,1,1), False])
-		self.model_task_list.append([103,"Arreglar mando garaje", date.today(), False])
-		self.model_task_list.append([104,"Recoger ropa del tinte", date.today(), False])
-		self.model_task_list.append([105,"Regalo cumpleaños Nico", date(2018,1,1), False])
-		self.model_task_list.append([106,"Devolver libro a la biblioteca", date(2018,2,12), True])
-		self.model_task_list.append([107,"Ordenar el congelador", date(2017,9,12), False])
-		self.model_task_list.append([108,"Lavar las cortinas", date(2017,10,1), False])
-		self.model_task_list.append([109,"Organizar el cajón de los mandos", date(2017,10,5), False])
-		self.model_task_list.append([110,"Poner flores en las jardineras", date.today(), False])
+		self.model_task_list.append([100,"Llevar coche al taller", datetime.today(), False])
+		self.model_task_list.append([101,"Lavar el coche", datetime.today(), False])
+		self.model_task_list.append([102,"Pagar el seguro", datetime.today(), False])
+		self.model_task_list.append([103,"Arreglar mando garaje", datetime.today(), False])
+		self.model_task_list.append([104,"Recoger ropa del tinte", datetime.today(), False])
+		self.model_task_list.append([105,"Regalo cumpleaños Nico", datetime.today(), False])
+		self.model_task_list.append([106,"Devolver libro a la biblioteca", datetime.today(), True])
+		self.model_task_list.append([107,"Ordenar el congelador", datetime.today(), False])
+		self.model_task_list.append([108,"Lavar las cortinas", datetime.today(), False])
+		self.model_task_list.append([109,"Organizar el cajón de los mandos", datetime.today(), False])
+		self.model_task_list.append([110,"Poner flores en las jardineras", datetime.today(), False])
 
 	#
 	##   add asigna un ID de tarea único a la lista de 
@@ -745,9 +734,6 @@ class TaskList_Model:
 	#metodo que valida la fecha de una tarea, devuelve True si el valor
 	#introducido por parametro es valido y False en caso contrario
 	def validate_taskdate(self, date):
-		# if not (datetime.now() < date):
-		# 	return False
-		# return True
 		if not ( (datetime.today().date() <= date.date())):
 		  return False
 		return True
