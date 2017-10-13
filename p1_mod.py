@@ -56,72 +56,77 @@ class TaskList_Controller:
 		self._model = model
 
 	#llamamos al metodo que muestra las cajas en la vista
-	def on_button_add_clicked(self, widget):
+	def on_show_add_dialog_button_clicked(self, widget):
 		self._view.update_add(False)
 		self._view.run_dialog_add()
 
+	#método que borra una tarea de la vista y el modelo
 	def remove_task(self, task):
 		if (task != None):
 			ok = self._model.remove(task[0])
 			if (ok != -1):
 				self._view.remove(task[0])
 				self._view.remove_selection()
+		#actualizamos los botones borrar todas y borras todas las hechas
 		self._view.update_menu_options()
 
+	#método que se lanza al seleccionar el botón eliminar, se obtienen las
+	#tareas que han sido seleccionadas y las vamos borrando de una en una
 	def on_button_remove_clicked(self, widget):
 		tasklist = self._view.get_tasks()
 		for task in tasklist:
 			self.remove_task(task)
 
-
-
+	#método que se lanza al intentar cerrar el programa
 	def on_button_exit_clicked(self, widget, event):
 		signal = self._view.exit(widget.get_toplevel())
 		return signal
 
 	#metodo que se lanza al editar la columna fecha de una tarea
 	def on_task_date_edit(self, widget, position, text):
+		#pasamos el string a datetime
 		date = self._model.convert_string_to_datetime(text)
+		#comprobamos que es correcta
 		if (date == (None,"void-date")):
-			self._view.run_dialog_provided_data_error(_("Error Crítico"),
+			self._view.run_dialog_provided_data_error(_("Error"),
 					_("La fecha está vacía"))
 		elif (date == (None,"bad-format")):
-			self._view.run_dialog_provided_data_error(_("Error Crítico"),
+			self._view.run_dialog_provided_data_error(_("Error"),
 					_("La fecha introducida no está en el formato correcto (dd/mm/yy)"))
 		elif (date == (None,"prior-date")):
-			self._view.run_dialog_provided_data_error(_("Error Crítico"),
+			self._view.run_dialog_provided_data_error(_("Error"),
 					_("La fecha introducida tiene que ser posterior a la fecha actual"))
 		else:
-			#task = self._view.get_task()
+			#obtenemos la tarea que ha sido seleccionada
 			task = self._view.get_tasks()[0]
 			if (task != None):
 				task = list(task)
-				#convertirmos a datetime el string que introduce el usuario
 				task[2] = date[0]
 				task = tuple(task)
 				data = (task[1], task[2], task[3])
+				#editamos la fecha en la vista y en el modelo
 				ok = self._model.edit(task[0], data)
 				if ok != -1:
 					self._view.edit(task[0], data)
 
 	#metodo que se lanza al editar la columna nombre de una tarea
 	def on_task_name_edit(self, widget, position, text):
-		#pasamos la cuadrupla a lista, editamos el valor y lo editamos en modelo
-		#si todo ok, lo editamos en la vista tambien
-		#si el string pasado por el usuario no es valido, ya no se hace nada mas
+		#obtenemos la tarea que ha sido seleccionada
 		tasklist = self._view.get_tasks()
+		#vemos que hay alguna tarea seleccionada, para evitar errores
 		if ((len(tasklist)) != 0):
+			#comprobamos que el nombre sea válido
 			if not (self._model.validate_taskname(text)):
-				self._view.run_dialog_provided_data_error(_("Error Crítico"),
+				self._view.run_dialog_provided_data_error(_("Error"),
 					_("El nombre de la tarea no puede estar vacío"))
 			else:
-				#task = self._view.get_task()
 				task = self._view.get_tasks()[0]
 				if (task != None):
 					task = list(task)
 					task[1] = text
 					task = tuple(task)
 					data = (task[1], task[2], task[3])
+					#editamos el nombre ne la vista y en el modelo
 					ok = self._model.edit(task[0], data)
 					if ok != -1:
 						self._view.edit(task[0], data)
@@ -129,51 +134,58 @@ class TaskList_Controller:
 	#metodo que se lanza al seleccionar la columna hecho        
 	def on_row_selected(self, widget, position, n_column):
 		if (n_column.get_title() == _("Hecho")):
-			#task = self._view.get_task()
 			task = self._view.get_tasks()[0]
 			#convertimos a lista y despues reconvertimos a tupla pq las tuplas son
 			#inmutables
 			task = list(task)
-			#haciendolo ternaria, queda mas chulo
+			#cambiamos su valor
 			task[3] = False if task[3] else True
 			task = tuple(task)
 			data = (task[1], task[2], task[3])
+			#editamos en la vista y en el modelo
 			ok = self._model.edit(task[0], data)
 			if ok != -1:
 				self._view.edit(task[0], data)
 				self._view.update_menu_options()
-		# else:
-		# 	self._view.update_delete(True)
 
-	#metodo que se lanza al añadir una nueva tarea
+	#metodo que se lanza al seleccionar el botón de añadir tarea
 	def on_button_add_task_clicked(self, widget):
-		data = self._view.run_dialog_add_prueba()
+		#cogemos el texto que ha introducido el usuario
+		data = self._view.get_data_from_add_dialog()
 		data = list(data)
+		#comprobamos que la fecha está bien
 		date = self._model.convert_string_to_datetime(data[1])
 		if (date == (None,"void-date")):
-			self._view.run_dialog_provided_data_error(_("Error Crítico"),
+			self._view.run_dialog_provided_data_error(_("Error"),
 					_("La fecha está vacía"))
 		elif (date == (None,"bad-format")):
-			self._view.run_dialog_provided_data_error(_("Error Crítico"),
+			self._view.run_dialog_provided_data_error(_("Error"),
 					_("La fecha introducida no está en el formato correcto (dd/mm/yy)"))
 		elif (date == (None,"prior-date")):
-			self._view.run_dialog_provided_data_error(_("Error Crítico"),
+			self._view.run_dialog_provided_data_error(_("Error"),
 					_("La fecha introducida tiene que ser posterior a la fecha actual"))
 		else:
+			#actualizamos la fecha de data
 			data[1] = date[0]
+			#comprobamos que el nombre esté bien
 			if not (self._model.validate_taskname(data[0])):
-				self._view.run_dialog_provided_data_error(_("Error Crítico"),
+				self._view.run_dialog_provided_data_error(_("Error"),
 				_("El nombre de la tarea no puede estar vacío"))
 			else:
 				data = tuple(data)
 				task_id = self._model.add(data)
 				if task_id != -1:
+					#borramos el texto de los entrys
 					self._view.remove_entry_text()
+					#activamos el botón que lanza el diálogo de añadir
 					self._view.update_add(True)
+					#desactivamos el botón para añadir una tarea
 					self._view.update_add_task(False)
+					#añadimos en la vista y en el modelo
 					self._view.add(task_id,data)
 					self._view.update_menu_options()
 
+	#método que se lanza al seleccionar el botón sincronizar
 	def on_button_sync_clicked(self, widget):
 		prev_status = self._view._sync_label.get_text()
 
@@ -189,21 +201,24 @@ class TaskList_Controller:
 		if sync_success:
 			state = {'spinner_running' : False,
 					'sync_button' : True,
-					'sync_status' : _("Última sincronización: ") + time.strftime("%H:%M")}
+					'sync_status' : _("Última sincronización: ") + time.strftime("%H" + '\u2236' +"%M")}
 		else:
 			state =  {'spinner_running' : False,
 					'sync_button' : True,
 					'sync_status' : prev_status,
-					'show_sync_error' : _("Error Sincronizando")}
+					'show_sync_error' : _("Error sincronizando")}
 		self._view.update_state_on_main_thread(state)
 
+	#método que se lanza al pulsar una tecla en los entrys del diálogo añadir
 	def on_key_pressed(self, entry, eventkey):
 		#se añade la tarea al pulsar la tecla enter solo si hay buffer en ambos entrys
 		if ((eventkey.get_keyval()[1] == 65293) 
 				& (self._view.get_name_buffer_has_text()) 
 				& (self._view.get_date_buffer_has_text())):
-			self.on_button_add_task_clicked(entry)	
+			self.on_button_add_task_clicked(entry)		
 
+	#método que se lanza cada vez que se modifica el campo donde se introduce
+	#el nombre de la tarea en el diálogo añadir tarea
 	def on_tarea_entry_changed(self, entry):
 		length = entry.get_buffer().get_length()
 		if (length > 0):
@@ -211,6 +226,8 @@ class TaskList_Controller:
 		else:
 			self._view.update_name_buffer(False)
 
+	#método que se lanza cada vez que se modifica el campo donde se introduce
+	#la fecha de la tarea en el diálogo añadir tarea
 	def on_fecha_entry_changed(self, entry):
 		length = entry.get_buffer().get_length()
 		if (length > 0):
@@ -218,26 +235,25 @@ class TaskList_Controller:
 		else:
 			self._view.update_date_buffer(False)
 
+	#método que se lanza al pulsar una tecla sobre el treeview
 	def on_supr_pressed(self, entry, eventkey):
+		#comprobamos que la tecla es SUPR
 		if ((eventkey.get_keyval()[1] == 65535)):
 			self.on_button_remove_clicked(entry)
 
 
-	def on_focus_out_treeview(self, uno, dos):
-		# print("Hola") 
-		# print(uno)
-		# print(dos)
-		self._view.update_delete(False)
-
-	
-
+	#método que se lanza al seleccionar la opción borrar todas las tareas
 	def on_delete_all_clicked(self, menuitem):
+		#cogemos la lista de tareas y las borramos una a una
 		task_list = self._view.get_task_list()
 		for task in task_list:
 			self.remove_task(task)
 
+	#método que se lanza al seleccionar la opción borrar todas las tareas hechas
 	def on_delete_all_done_clicked(self, menuitem):
+		#cogemos la lista de tareas
 		task_list = self._view.get_task_list()
+		#vamos comprobando una a una que tengan el campo hecho activado
 		for task in task_list:
 			if (task[3]):
 				self.remove_task(task)
@@ -264,22 +280,22 @@ class TaskList_View:
 				return 1
 			return 0
 			
+		#creamos la ventana con el título
 		self._win = Gtk.Window(title=_("Práctica 1" + '\u2013' +  "IPM 17/18"))
 		self._win.set_size_request(500, 500)
-		# El código sigue los ejemplos del tuto: https://python-gtk-3-tutorial.readthedocs.io/en/latest/index.html
+		
+		#creamos la header bar donde irán los botones principales
 		header_bar = Gtk.HeaderBar()
 		header_bar.set_show_close_button(True)
 		header_bar.props.title = _("Práctica 1" + '\u2013' +  "IPM 17/18")
 		self._win.set_titlebar(header_bar)
+
+		#creamos la caja (vertical) principal de la ventana, donde se meterán todos los elementos
 		box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
-		# box.pack_start(header_bar, True, True, 0)
-
-
-
-
-		
-
+		#introducimos la caja en la ventana
 		self._win.add(box)
+
+		#creamos la ListStore y le añadimos todos los elementos
 		self.store = Gtk.ListStore(int, str, GObject.TYPE_PYOBJECT, bool)
 		self.store
 		self.store.append([100,"Llevar coche al taller", datetime.today(), False])
@@ -300,12 +316,10 @@ class TaskList_View:
 		#de doble click
 		self.tree.set_activate_on_single_click(True)
 		self.selection = self.tree.get_selection()
+		#desactivamos la búsqueda
 		self.tree.set_enable_search(False)
-
-
-		#seleccion multiple
-		self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
-		
+		#activamos la seleccion multiple
+		self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)	
 		#diferenciamos entre el renderer del nombre y de la fecha pq a la hora de editar
 		#seran eventos diferentes
 		self.renderer_name = Gtk.CellRendererText()
@@ -341,35 +355,33 @@ class TaskList_View:
 		#centramos el texto del título de la columna
 		column.set_alignment(0.5)
 		self.tree.append_column(column)
-		#self.tree.set_headers_visible(False)
 		column.set_sort_column_id(3)
-		#barra superior
+		
 
-		#creamos los elementos
-		#botón de añadir
-		self._add_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_ADD,1)
-		self._add_button.get_style_context().add_class('suggestive-action')
+
+		#creamos todos los botones que irán en la header bar
+		self.show_add_dialog_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_ADD,1)
+		self.show_add_dialog_button.get_style_context().add_class('suggestive-action')
 		self._delete_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_REMOVE,1)
 		self._delete_button.get_style_context().add_class('destructive-action')
 		self._delete_button.set_sensitive(False)
 		self._sync_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_REFRESH,1)
 		self._sync_button.set_alignment(1,0)
-		self.menu_button = Gtk.MenuButton()
+		menu_button = Gtk.MenuButton()
 
-		self.menu = Gtk.Menu()
-		self.delete_all = Gtk.MenuItem(_("Borrar todo"))
+		#creamos el menú y lo asociamos el menu_button
+		menu = Gtk.Menu()
+		self.delete_all = Gtk.MenuItem(_("Borrar todas las tareas"))
 		self.delete_all.show()
-		self.delete_done_tasks = Gtk.MenuItem(_("Borrar tareas hechas"))
+		self.delete_done_tasks = Gtk.MenuItem(_("Borrar todas las tareas hechas"))
 		self.delete_done_tasks.show()
-		# self.menu.attach(delete_all, 0, 1, 2, 3)
-		# self.menu.attach(delete_done_tasks, 1, 1, 1, 1)
-		self.menu.append(self.delete_all)
-		self.menu.append(self.delete_done_tasks)
-		self.menu_button.set_popup(self.menu)
+		menu.append(self.delete_all)
+		menu.append(self.delete_done_tasks)
+		menu_button.set_popup(menu)
 		self.delete_all.set_sensitive(False)
 
 		#espacio donde irá el sync label y sync spinner
-		box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+		box_sync = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
 		self.sync_spinner = Gtk.Spinner()
 		self._sync_label = Gtk.Label("")
 		#lo alineamos casi abajo del todo
@@ -381,23 +393,21 @@ class TaskList_View:
 
 
 		#diálogo añadir
+
 		#metemos los entrys en una caja nueva por el final
-		#self.hbox_add_dialog1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
 		self.tareaEntry = Gtk.Entry()
 		self.fechaEntry = Gtk.Entry()
-		#pendiente de cuadrar mejor
-		#metemos los labels en una caja imnediatamente encima de la anterior
-		#self.hbox_add_dialog2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing = 8)
+		#creamos los labels y los justificamos a l izquierda
 		name_label = Gtk.Label(_("Nombre"))
 		name_label.set_xalign(1)
-		name_label.set_max_width_chars(1)
 		date_label = Gtk.Label(_("Fecha"))
 		date_label.set_xalign(1)
-		self.add_task_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_ADD,1)
+		#creamos el botón de añadir y lo centramos
+		self.add_task_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_ADD, 1)
 		self.add_task_button.set_sensitive(False)
 		self.add_task_button.set_alignment(0.5, 0.5)
 
-
+		#creamos las cajas dónde ira el diálogo añadir (1 horizontal y 3 verticales)
 		self.hbox_add_dialog = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL, spacing = 0)
 		self.vbox_add_dialog1 = Gtk.Box(orientation = Gtk.Orientation.VERTICAL, spacing = 6)
 		self.vbox_add_dialog2 = Gtk.Box(orientation = Gtk.Orientation.VERTICAL, spacing = 6)
@@ -405,44 +415,59 @@ class TaskList_View:
 
 
 		#lo metemos todo en sus respectivas cajas
-
+		#metemos los elementos de añadir en sus cajas verticales
 		self.vbox_add_dialog1.pack_start(name_label, True, True, 0)
 		self.vbox_add_dialog1.pack_end(date_label, True, True, 0)
 		self.vbox_add_dialog2.pack_start(self.tareaEntry, True, True, 0)
 		self.vbox_add_dialog2.pack_end(self.fechaEntry, True, True, 0)
 		#espacio que irá entre los bordes de la caja y el botón (arriba y abajo)
 		self.vbox_add_dialog3.pack_start(self.add_task_button, True, True, 8)
+		#metemos esas 3 cajas en la caja horizontal que englobará a las 3 cajas verticales
 		#espacio que irá entre los border de la caja y la caja que metemos a izquierda y derecha
 		self.hbox_add_dialog.pack_start(self.vbox_add_dialog1, True, True, 18)
 		self.hbox_add_dialog.pack_start(self.vbox_add_dialog2, True, True, 0)
 		#espacio que irá entre los border de la caja y la caja que metemos a izquierda y derecha
 		self.hbox_add_dialog.pack_end(self.vbox_add_dialog3, True, True, 18)
-
+		#metemos la caja horizontal en la caja principal por el final
 		#espacio que irá entre los border de la caja y la caja que metemos arriba y abajo
 		box.pack_end(self.hbox_add_dialog, False, False, 18)
-
-
+		#metemos el treeview en la caja principal por el final
 		box.pack_end(self.tree, True, True, 0)
-		box2.pack_start(self.sync_spinner, False, False, 0)
-		box2.pack_start(self._sync_label, True, True, 0)
-		header_bar.pack_start(self.menu_button)
-		header_bar.pack_end(self._add_button)
-		header_bar.pack_end(self._delete_button)
+		#metemos los elementos de sincronización en su caja
+		box_sync.pack_start(self.sync_spinner, False, False, 0)
+		box_sync.pack_start(self._sync_label, True, True, 0)
+		#metemos en la header bar los botones que contendrá
+		# header_bar.pack_start(menu_button)
+		# header_bar.pack_end(self.show_add_dialog_button)
+		# header_bar.pack_end(self._delete_button)
+		# header_bar.pack_end(self._sync_button)
+		header_bar.pack_start(self.show_add_dialog_button)
+		header_bar.pack_end(menu_button)
 		header_bar.pack_end(self._sync_button)
-		box.pack_start(box2, False, False, 0)
+		header_bar.pack_end(self._delete_button)
 
+		#metemos la caja con los elementos de sincronización en la caja principal por el ppio
+		box.pack_start(box_sync, False, False, 0)
+
+		#mostramos todos los elementos menos el diálogo de añadir
 		self._win.show_all()
 		self.hbox_add_dialog.hide()
 
+		#variables que controlarán si hay texto en los buffers del diálogo añadir
+		#por defecto inicializadas a false
 		self.name_buffer_has_text = False
 		self.date_buffer_has_text = False
+
+		#actualizo los botones del menú contextual, cuento las tareas que hay creadas y/o activadas
+		#y se desactivarán en función de si el número de tareas es igual a 0
 		self.update_menu_options()
 
+	#todas las señales
 	def connect(self, controller):
-		#self._exit_button.connect('clicked', controller.on_button_exit_clicked)
 		self._win.connect("delete-event", controller.on_button_exit_clicked)
-		self._add_button.connect('clicked', controller.on_button_add_clicked)
+		self.show_add_dialog_button.connect('clicked', controller.on_show_add_dialog_button_clicked)
 		self._delete_button.connect('clicked', controller.on_button_remove_clicked)
+		#seleccionar una fila
 		self.tree.connect('row-activated', controller.on_row_selected)
 		#editar el nombre de la tarea
 		self.renderer_name.connect('edited', controller.on_task_name_edit)
@@ -450,22 +475,21 @@ class TaskList_View:
 		self.renderer_date.connect('edited', controller.on_task_date_edit)
 		self.add_task_button.connect('clicked', controller.on_button_add_task_clicked)
 		self._sync_button.connect('clicked', controller.on_button_sync_clicked)
+		#pulsar Enter en entrys del diálogo de añadir
 		self.tareaEntry.connect('key-press-event', controller.on_key_pressed)
 		self.fechaEntry.connect('key-press-event', controller.on_key_pressed)
+		#buffer alterado
 		self.tareaEntry.connect('changed', controller.on_tarea_entry_changed)
 		self.fechaEntry.connect('changed', controller.on_fecha_entry_changed)
+		#pulsar suprimir sobre el treeview
 		self.tree.connect('key-press-event', controller.on_supr_pressed)
 		self.delete_all.connect('activate', controller.on_delete_all_clicked)
 		self.delete_done_tasks.connect('activate', controller.on_delete_all_done_clicked)
 		self.selection.connect("changed", controller.on_tree_selection_changed)
-		#self.tree.connect('focus', controller.on_focus_activated)
-		#self.tree.connect('focus-out-event', controller.on_focus_out_treeview)
 
 
 	#metodo con el que mostramos las dos cajas del fondo
 	def run_dialog_add(self):
-		# self.hbox_add_dialog1.show_all()
-		# self.hbox_add_dialog2.show_all()
 		self.hbox_add_dialog.show_all()
 		
 	
@@ -477,14 +501,11 @@ class TaskList_View:
 		return self.date_buffer_has_text
 
 	#metodo con el que añadimos la tarea a la vista y al modelo
-	def run_dialog_add_prueba(self):
+	def get_data_from_add_dialog(self):
 		data = (self.tareaEntry.get_text(), self.fechaEntry.get_text(),False)
-		# self.tareaEntry.set_text("")
-		# self.fechaEntry.set_text("")
-		# self.hbox1.hide()
-		# self.hbox2.hide()
 		return data
 		
+	#método que muestra un error al introducir mal los datos
 	def run_dialog_provided_data_error(self, title, secondary_text):
 		dialog = Gtk.MessageDialog(self._win, 0, 
 			Gtk.MessageType.INFO, Gtk.ButtonsType.OK, 
@@ -493,6 +514,7 @@ class TaskList_View:
 		dialog.run()
 		dialog.destroy()
 
+	#se devuelve la tarea seleccionada
 	def get_task(self):
 		task = None
 		selection = self.selection
@@ -501,79 +523,89 @@ class TaskList_View:
 			task = self.store.get(treeiter,0,1,2,3)
 		return task
 
+	#se devuelven todas las tareas seleccionadas
 	def get_tasks(self):
 		tasklist = []
 		#devuelve liststore y treepaths
 		selection = self.selection.get_selected_rows()
-		# print (selection)
 
 		lliststore, treepaths = selection
 		for i in range (len(treepaths)):
 			treeiter = lliststore.get_iter(treepaths[i])
-			# print(i)
 			if treeiter != None:
 				task = self.store.get(treeiter, 0, 1, 2, 3)
 				tasklist.append(task)
-				# print(task)
-		# print(len(tasklist))
 		return tasklist
 
+	#se saca un diálogo y en función de la opción escogida se cerrará el programa o no
 	def exit(self, parent):
-		dialog = Gtk.Dialog(_("¡ATENCIÓN!"), parent, Gtk.DialogFlags.DESTROY_WITH_PARENT, 
+		dialog = Gtk.Dialog(_("¡Atención!"), parent, Gtk.DialogFlags.DESTROY_WITH_PARENT, 
 				(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, 
 				Gtk.STOCK_OK, Gtk.ResponseType.OK))
 		vbox = Gtk.VBox(spacing = 10)
-		dialog.get_content_area().add(vbox)
-					
+		#meto el diálogo en la caja
+		dialog.get_content_area().add(vbox)	
+		#creo los etiquetas con el texto
 		etiqueta1 = Gtk.Label(_("¿Quieres cerrar la aplicación?"))
-
 		etiqueta2 = Gtk.Label(_("Si no se cancela, la aplicación se cerrará"))
+		#meto ambas por el principio del diálogo
 		vbox.pack_start(etiqueta1, True, True, 0)
 		vbox.pack_start(etiqueta2, True, True, 0)
 		vbox.show_all()
+		#cojo la respuesta del usuario
 		respuesta = dialog.run()
-					
+		#en función de la respuesta, cierro el programa o no
 		if respuesta == Gtk.ResponseType.OK:
 			Gtk.main_quit()
 		else:
 			dialog.destroy()
 			return True
 
+	#método añadir tareas a la liststore
 	def add(self, task_id, data):
 		data = list(data)
 		data.insert(0,task_id)
 		data = tuple(data)
 		self.store.append(data)
 
+	#método editar una tarea de la liststore
 	def edit(self, task_id, data):
 		for task in self.store:
 			if task[0] == task_id:
 				self.store.set(task.iter, 1, data[0], 2, data[1], 3, data[2])
 
+	#método borrar una tarea de la liststore (por task_id)
 	def remove(self, task_id):
 		for task in self.store:
 			if task[0] == task_id:
 				self.store.remove(task.iter)
-				
+	
+	#método para actualizar el botón de borrar		
 	def update_delete(self, active):
 		self._delete_button.set_sensitive(active)
 
+	#método que actualiza la variable que controlan el buffer nombre del diálogo añadir
+	#y además actualiza el botón añadir tarea
 	def update_name_buffer(self, active):
 		self.name_buffer_has_text = active
 		self.update_add_task(self.get_name_buffer_has_text() 
 			& self.get_date_buffer_has_text())
 
+	#método que actualiza la variable que controlan el buffer fecha del diálogo añadir
+	#y además actualiza el botón añadir tarea
 	def update_date_buffer(self, active):
 		self.date_buffer_has_text = active
 		self.update_add_task(self.get_name_buffer_has_text() 
 			& self.get_date_buffer_has_text())
 
+	#método que actualiza el botón borrar todas las tareas del menú contextual
 	def update_delete_all_button(self):
 		if (len(self.store) == 0):
 			self.delete_all.set_sensitive(False)
 		else:
 			self.delete_all.set_sensitive(True)
 
+	#método que actualiza el botón borrar todas las tareas hechas del menú contextual
 	def update_delete_all_done_button(self):
 		#miramos si hay alguna tarea marcada como hecha
 		for task in self.store:
@@ -583,13 +615,16 @@ class TaskList_View:
 		#si no hay ninguna, desactivamos el botón
 		self.delete_done_tasks.set_sensitive(False)
 
+	#método que llama a los dos métodos anteriores
 	def update_menu_options(self):
 		self.update_delete_all_button()
 		self.update_delete_all_done_button()
 
+	#método que actualiza el bóton que lanza el diálogo añadir
 	def update_add(self, active):
-		self._add_button.set_sensitive(active)
+		self.show_add_dialog_button.set_sensitive(active)
 
+	#método que actualiza el botón de añadir una tarea
 	def update_add_task(self, active):
 		self.add_task_button.set_sensitive(active)
 
@@ -624,27 +659,17 @@ class TaskList_View:
 		dialog.run()
 		dialog.destroy()
 
+	#método que limpia los entrys del diálogo añadir y además los oculta
 	def remove_entry_text(self):
 		self.tareaEntry.set_text("")
 		self.fechaEntry.set_text("")
-		# self.hbox_add_dialog1.hide()
-		# self.hbox_add_dialog2.hide()
 		self.hbox_add_dialog.hide()
 
+	#método que devuelve la liststore
 	def get_task_list(self):
-		# tasklist = []
-
-		# for i in range (len(self.store)):
-		# 	treeiter = lliststore.get_iter(treepaths[i])
-		# 	# print(i)
-		# 	if treeiter != None:
-		# 		task = self.store.get(treeiter, 0, 1, 2, 3)
-		# 		tasklist.append(task)
-		# 		# print(task)
-		# # print(len(tasklist))
-		# return tasklist
 		return self.store
 
+	#método que des-selecciona todo
 	def remove_selection(self):
 		self.selection.unselect_all()
 		self.update_delete(False)
@@ -675,7 +700,6 @@ class TaskList_Model:
 	##   tareas y la concatena en la lista del modelo devolviendo el ID
 	##   Si la informacion es nula, simplemente devuelve -1 a modo de error
 	#
-
 	def add(self, data):
 		done = -1
 		if data != None:
@@ -687,6 +711,8 @@ class TaskList_Model:
 			self.ID += 1
 		return done
 
+	#edita la tarea de la lista y devuelve su id en caso de que la operación se haya
+	#podido realizar (-1 en caso contrario)
 	def edit(self, task_id, data):
 		done = -1
 		#cojo el ID para buscar si está ese elemento en la lista
@@ -697,6 +723,8 @@ class TaskList_Model:
 				break
 		return done
 
+	#borra la tarea de la lista y devuelve su id en caso de que la operación se haya
+	#podido realizar (-1 en caso contrario)
 	def remove(self, task_id):
 		done = -1
 		for task in self.model_task_list:
