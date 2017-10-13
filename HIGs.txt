@@ -1,0 +1,32 @@
+Distribución visual:
+
+    En el diálogo de añadir tarea, se ha dejado un espacio de 6 píxeles entre ambos Entrys y 18 píxeles de margen a ambos lados, y 12 píxeles entre los Labels y los Entrys, tal y como se muestra en el siguiente enlace: https://developer.gnome.org/hig/stable/visual-layout.html.es
+
+Escritura:
+    
+    Se han seguido las recomendaciones del enlace https://developer.gnome.org/hig/stable/writing-style.html.es. Como se puede ver, no se incumple ninguna de las recomendaciones
+
+Iconos y diseño:
+    
+    Se han usado iconos acordes a su significado para hacer la interfaz más intuitiva, en particular para los botones de:
+        Añadir
+        Borrar
+        Sincronizar
+        Cancelar
+
+Tipografía:
+    
+    Se han seguido las recomendaciones del siguiente enlace en cuanto a la tipografía https://developer.gnome.org/hig/stable/typography.html.es, en particular, se han usado caractéres unicode tanto para mostrar la hora (de la sincronización), la elipsis (...) en la etiqueta Sincronizando... y el guión para el título de la ventana. Nos habría gustado poder poner el apóstrofe también, pero daba problemas a la hora de hacer la traducción, así que hemos optado por escribirlo en la forma larga (ej. Couldn't - Could not)
+
+
+Elementos de la interfaz:
+    
+    Se ha usado una barra de herramientas para colocar los principales elementos (añadir, borrar, etc) tal y como se indica en https://developer.gnome.org/hig/stable/toolbars.html.es, además, nos hemos fijado en aplicaciones propias de gnome (Gedit) para hacer un diseño lo más similar posible.
+
+    En cuanto a los botones, se han usado las acciones sugeridas en el botón añadir tarea y el de acción destructiva en el botón de eliminar tarea/s
+
+    También se han seguido las indicaciones en cuanto a indicadores de progreso (en nuestro spinner), y vemos que no se incumple ninguna recomendación del enlace https://developer.gnome.org/hig/stable/progress-spinners.html.es
+
+    Se han usado ventanas emergentes para los diálogos de error y el diálogo de cerrar la aplicación, con textos cortos y concisos, tal y como se indica en https://developer.gnome.org/hig/stable/popovers.html.es
+
+    En cuánto a los menús, no se sigue la restricción de un mínimo de 3 elementos, pero ya que no se nos han ocurrido más casos de uso para la aplicación, hemos pensado que es correcto crear el menú de todas formas ya que todos los casos de uso nuevos que se implementen irán en dicho menú
