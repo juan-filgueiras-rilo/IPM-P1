@@ -85,16 +85,18 @@ class TaskList_Controller:
 			self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
 					_("La fecha introducida tiene que ser posterior a la fecha actual"))
 		else:
-			task = self._view.get_tasks()[0]
-			if (task != None):
-				task = list(task)
-				#convertirmos a datetime el string que introduce el usuario
-				task[2] = date[0]
-				task = tuple(task)
-				data = (task[1], task[2], task[3])
-				ok = self._model.edit(task[0], data)
-				if ok != -1:
-					self._view.edit(task[0], data)
+			tasklist = self._view.get_tasks()
+			if ((len(tasklist)) != 0):
+				task = self._view.get_tasks()[0]
+				if (task != None):
+					task = list(task)
+					#convertirmos a datetime el string que introduce el usuario
+					task[2] = date[0]
+					task = tuple(task)
+					data = (task[1], task[2], task[3])
+					ok = self._model.edit(task[0], data)
+					if ok != -1:
+						self._view.edit(task[0], data)
 
 	#metodo que se lanza al editar la columna nombre de una tarea
 	def on_task_name_edit(self, widget, position, text):
@@ -237,10 +239,6 @@ class TaskList_View:
 		self._win.set_titlebar(hb)
 		box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
 
-		# print(box.get_homogeneous())
-		# box.set_homogeneous(True)
-		# print(box.get_homogeneous())
-
 		#metemos los entrys en una caja nueva por el final
 		self.hbox1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
 		
@@ -260,12 +258,8 @@ class TaskList_View:
 		date_label = Gtk.Label(_("Fecha"))
 		date_label.set_xalign(0.2)
 		self.hbox2.pack_start(date_label, True, True, 0)
-		
-		#self.add_task_button = Gtk.Button(label="+")
 		self.add_task_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_ADD,1)
 		self.add_task_button.set_sensitive(False)
-		#self.add_task_button.set_sensitive(False)
-		#box2.pack_end(self._delete_button, True, True, 0)
 
 		self.hbox1.pack_end(self.add_task_button, True, True, 0)
 		self.hbox1.pack_end(self.fechaEntry, True, True, 0)
@@ -293,7 +287,7 @@ class TaskList_View:
 		self.selection = self.tree.get_selection()
 
 		#seleccion multiple
-		self.tree.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE)
+		self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
 		self.tree.set_rubber_banding(True)
 		#diferenciamos entre el renderer del nombre y de la fecha pq a la hora de editar
 		#seran eventos diferentes
@@ -337,9 +331,6 @@ class TaskList_View:
 		#
 		# #
 		#
-
-		# box2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-		# box.pack_start(box2, True, True, 0)
 
 		self._add_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_ADD,1)
 		self._add_button.get_style_context().add_class('suggestive-action')
@@ -429,7 +420,7 @@ class TaskList_View:
 
 	def get_task(self):
 		task = None
-		selection = self.tree.get_selection()
+		selection = self.selection
 		treeiter = selection.get_selected()[1]
 		if treeiter != None:
 			task = self.store.get(treeiter,0,1,2,3)
@@ -438,7 +429,7 @@ class TaskList_View:
 	def get_tasks(self):
 		tasklist = []
 		#devuelve liststore y treepaths
-		selection = self.tree.get_selection().get_selected_rows()
+		selection = self.selection.get_selected_rows()
 		# print (selection)
 
 		lliststore, treepaths = selection
@@ -547,10 +538,11 @@ class TaskList_View:
 		self.hbox2.hide()		
 	
 	def remove_selection(self):
-		self.tree.get_selection().unselect_all()
+		print(self.selection.get_selected_rows)
+		self.selection.unselect_all()
+		print(self.selection.get_selected_rows)
 		self.update_delete(False)
 		
-
 '''
 Modelo
 '''
@@ -635,7 +627,7 @@ class TaskList_Model:
 	#metodo que valida la fecha de una tarea, devuelve True si el valor
 	#introducido por parametro es valido y False en caso contrario
 	def validate_taskdate(self, date):
-		if not (datetime.now() < date):
+		if not ( (datetime.today().date() <= date.date())):
 			return False
 		return True
 
