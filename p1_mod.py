@@ -98,16 +98,18 @@ class TaskList_Controller:
 					_("La fecha introducida tiene que ser posterior a la fecha actual"))
 		else:
 			#obtenemos la tarea que ha sido seleccionada
-			task = self._view.get_tasks()[0]
-			if (task != None):
-				task = list(task)
-				task[2] = date[0]
-				task = tuple(task)
-				data = (task[1], task[2], task[3])
-				#editamos la fecha en la vista y en el modelo
-				ok = self._model.edit(task[0], data)
-				if ok != -1:
-					self._view.edit(task[0], data)
+			tasklist = self._view.get_tasks()
+			if ((len(tasklist)) != 0):
+				task = tasklist[0]		
+				if (task != None):
+					task = list(task)
+					task[2] = date[0]
+					task = tuple(task)
+					data = (task[1], task[2], task[3])
+					#editamos la fecha en la vista y en el modelo
+					ok = self._model.edit(task[0], data)
+					if ok != -1:
+						self._view.edit(task[0], data)
 
 	#metodo que se lanza al editar la columna nombre de una tarea
 	def on_task_name_edit(self, widget, position, text):
@@ -281,7 +283,7 @@ class TaskList_View:
 			return 0
 			
 		#creamos la ventana con el título
-		self._win = Gtk.Window(title=_("Práctica 1" + '\u2013' +  "IPM 17/18"))
+		self._win = Gtk.Window()
 		self._win.set_size_request(500, 500)
 		
 		#creamos la header bar donde irán los botones principales
@@ -297,7 +299,6 @@ class TaskList_View:
 
 		#creamos la ListStore y le añadimos todos los elementos
 		self.store = Gtk.ListStore(int, str, GObject.TYPE_PYOBJECT, bool)
-		self.store
 		self.store.append([100,"Llevar coche al taller", datetime.today(), False])
 		self.store.append([101,"Lavar el coche", datetime.today(), False])
 		self.store.append([102,"Pagar el seguro", datetime.today(), False])
@@ -356,13 +357,11 @@ class TaskList_View:
 		column.set_alignment(0.5)
 		self.tree.append_column(column)
 		column.set_sort_column_id(3)
-		
-
 
 		#creamos todos los botones que irán en la header bar
 		self.show_add_dialog_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_ADD,1)
-		self.show_add_dialog_button.get_style_context().add_class('suggestive-action')
-		self._delete_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_REMOVE,1)
+		self.show_add_dialog_button.get_style_context().add_class('suggested-action')
+		self._delete_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_DELETE,1)
 		self._delete_button.get_style_context().add_class('destructive-action')
 		self._delete_button.set_sensitive(False)
 		self._sync_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_REFRESH,1)
@@ -404,6 +403,8 @@ class TaskList_View:
 		date_label.set_xalign(1)
 		#creamos el botón de añadir y lo centramos
 		self.add_task_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_ADD, 1)
+		self.add_task_button.get_style_context().add_class('suggested-action')
+
 		self.add_task_button.set_sensitive(False)
 		self.add_task_button.set_alignment(0.5, 0.5)
 

@@ -1,15 +1,15 @@
-# English translations for p package.
-# Copyright (C) 2017 THE p'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the p package.
-# wifito <wifo92@gmail.com>, 2017.
+# English translations for ipm-p package.
+# Copyright (C) 2017 THE ipm-p'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the ipm-p package.
+# juan.filgueiras.rilo <juan@ubuntu-16.04>, 2017.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: p 1\n"
+"Project-Id-Version: ipm-p 1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-13 19:25+0200\n"
-"PO-Revision-Date: 2017-10-13 19:25+0200\n"
-"Last-Translator: wifito <wifo92@gmail.com>\n"
+"POT-Creation-Date: 2017-10-13 18:09+0200\n"
+"PO-Revision-Date: 2017-10-13 22:11+0200\n"
+"Last-Translator: juan.filgueiras.rilo <juan@ubuntu-16.04>\n"
 "Language-Team: English\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
@@ -19,85 +19,85 @@ msgstr ""
 
 #: p1_mod.py:37
 msgid "%d/%m/%y"
-msgstr "%m/%d/%Y"
+msgstr "%d/%m/%Y"
 
 #: p1_mod.py:48
 msgid "Última sincronización: Aún no se ha sincronizado"
-msgstr "Last sync: No sync done"
+msgstr "Last sync: Not synchronized yet"
 
-#: p1_mod.py:91 p1_mod.py:94 p1_mod.py:97 p1_mod.py:120 p1_mod.py:159
-#: p1_mod.py:162 p1_mod.py:165 p1_mod.py:172
+#: p1_mod.py:91 p1_mod.py:94 p1_mod.py:97 p1_mod.py:122 p1_mod.py:161
+#: p1_mod.py:164 p1_mod.py:167 p1_mod.py:174
 msgid "Error"
 msgstr "Error"
 
-#: p1_mod.py:92 p1_mod.py:160
+#: p1_mod.py:92 p1_mod.py:162
 msgid "La fecha está vacía"
 msgstr "Date is empty"
 
-#: p1_mod.py:95 p1_mod.py:163
+#: p1_mod.py:95 p1_mod.py:165
 msgid "La fecha introducida no está en el formato correcto (dd/mm/yy)"
-msgstr "Provided data is not in the correct form (mm/dd/yyyy)"
+msgstr "Date introduces is not on a valid format (dd/mm/YYYY)"
 
-#: p1_mod.py:98 p1_mod.py:166
+#: p1_mod.py:98 p1_mod.py:168
 msgid "La fecha introducida tiene que ser posterior a la fecha actual"
-msgstr "Provided date must be subsequent to the current date"
+msgstr "Introduced date must be subsequent the actual date"
 
-#: p1_mod.py:121 p1_mod.py:173
+#: p1_mod.py:123 p1_mod.py:175
 msgid "El nombre de la tarea no puede estar vacío"
-msgstr "Task name should not be empty"
+msgstr "Task name mustn't be empty!"
 
-#: p1_mod.py:136 p1_mod.py:352
+#: p1_mod.py:138 p1_mod.py:353
 msgid "Hecho"
 msgstr "Done"
 
-#: p1_mod.py:194
+#: p1_mod.py:196
 msgid "Sincronizando\\u2026"
 msgstr "Synchronizing\\u2026"
 
-#: p1_mod.py:204
+#: p1_mod.py:206
 msgid "Última sincronización: "
 msgstr "Last sync: "
 
-#: p1_mod.py:209
+#: p1_mod.py:211
 msgid "Error sincronizando"
-msgstr "Error while sync"
+msgstr "Error while synchronizing"
 
-#: p1_mod.py:284 p1_mod.py:290
+#: p1_mod.py:292
 msgid "Práctica 1\\u2013IPM 17/18"
-msgstr "Practise 1\\u2013IPM 17/18"
+msgstr "Practical 1\\u2013IPM 17/18"
 
-#: p1_mod.py:330
+#: p1_mod.py:331
 msgid "Tarea"
 msgstr "Task"
 
-#: p1_mod.py:342 p1_mod.py:403
+#: p1_mod.py:343 p1_mod.py:402
 msgid "Fecha"
 msgstr "Date"
 
-#: p1_mod.py:374
+#: p1_mod.py:373
 msgid "Borrar todas las tareas"
 msgstr "Remove all tasks"
 
-#: p1_mod.py:376
+#: p1_mod.py:375
 msgid "Borrar todas las tareas hechas"
 msgstr "Remove all done tasks"
 
-#: p1_mod.py:401
+#: p1_mod.py:400
 msgid "Nombre"
 msgstr "Name"
 
-#: p1_mod.py:542
+#: p1_mod.py:543
 msgid "¡Atención!"
 msgstr "Warning!"
 
-#: p1_mod.py:549
-msgid "¿Quieres cerrar la aplicación?"
-msgstr "Do you want to close application?"
-
 #: p1_mod.py:550
-msgid "Si no se cancela, la aplicación se cerrará"
-msgstr "If you don\\u2019t cancel, application will close"
+msgid "¿Quieres cerrar la aplicación?"
+msgstr "Do you want to close the application?"
 
-#: p1_mod.py:658
+#: p1_mod.py:551
+msgid "Si no se cancela, la aplicación se cerrará"
+msgstr "If you do not cancel, the app will exit"
+
+#: p1_mod.py:659
 msgid "¡No se puede conectar con el servidor!"
-msgstr "Couldn\\u2019t connect to server!"
+msgstr "Can't connect to server!"
