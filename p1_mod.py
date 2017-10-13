@@ -190,10 +190,9 @@ class TaskList_Controller:
 	#método que se lanza al seleccionar el botón sincronizar
 	def on_button_sync_clicked(self, widget):
 		prev_status = self._view._sync_label.get_text()
-
 		state = {'spinner_running' : True,
 				'sync_button' : False,
-				'sync_status' : _("Sincronizando"+'\u2026')}
+				'sync_status' : (_("Sincronizando")+'\u2026')}
 		self._view.update_state(state)
 		t = threading.Thread(target = self.sync, args = (prev_status, ))
 		t.start()
@@ -289,7 +288,7 @@ class TaskList_View:
 		#creamos la header bar donde irán los botones principales
 		header_bar = Gtk.HeaderBar()
 		header_bar.set_show_close_button(True)
-		header_bar.props.title = _("Práctica 1" + '\u2013' +  "IPM 17/18")
+		header_bar.props.title = _("Práctica 1 ") + '\u2013' + _(" IPM 17/18")
 		self._win.set_titlebar(header_bar)
 
 		#creamos la caja (vertical) principal de la ventana, donde se meterán todos los elementos
