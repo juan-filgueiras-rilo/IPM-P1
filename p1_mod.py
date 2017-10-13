@@ -300,6 +300,7 @@ class TaskList_View:
 		#de doble click
 		self.tree.set_activate_on_single_click(True)
 		self.selection = self.tree.get_selection()
+		self.tree.set_enable_search(False)
 
 
 		#seleccion multiple
