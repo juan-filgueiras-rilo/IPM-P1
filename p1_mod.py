@@ -262,6 +262,15 @@ class TaskList_Controller:
 	def on_tree_selection_changed(self, widget):
 		self._view.update_delete(True)
 
+	#método que se lanza al seleccionar el botón de cancelar del diálogo de añadir tarea
+	def on_cancel_add_task_button_clicked(self, widget):
+		#borramos el texto de los entrys
+		self._view.remove_entry_text()
+		#activamos el botón que lanza el diálogo de añadir
+		self._view.update_add(True)
+		#desactivamos el botón para añadir una tarea
+		self._view.update_add_task(False)
+
 		
 '''
 Vista
@@ -403,6 +412,7 @@ class TaskList_View:
 		#creamos el botón de añadir y lo centramos
 		self.add_task_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_ADD, 1)
 		self.add_task_button.get_style_context().add_class('suggested-action')
+		self.cancel_add_task_button = Gtk.Button.new_from_icon_name(Gtk.STOCK_CANCEL, 1)
 
 		self.add_task_button.set_sensitive(False)
 		self.add_task_button.set_alignment(0.5, 0.5)
@@ -422,6 +432,7 @@ class TaskList_View:
 		self.vbox_add_dialog2.pack_end(self.fechaEntry, True, True, 0)
 		#espacio que irá entre los bordes de la caja y el botón (arriba y abajo)
 		self.vbox_add_dialog3.pack_start(self.add_task_button, True, True, 8)
+		self.vbox_add_dialog3.pack_start(self.cancel_add_task_button, True, True, 8)
 		#metemos esas 3 cajas en la caja horizontal que englobará a las 3 cajas verticales
 		#espacio que irá entre los border de la caja y la caja que metemos a izquierda y derecha
 		self.hbox_add_dialog.pack_start(self.vbox_add_dialog1, True, True, 18)
@@ -486,6 +497,7 @@ class TaskList_View:
 		self.delete_all.connect('activate', controller.on_delete_all_clicked)
 		self.delete_done_tasks.connect('activate', controller.on_delete_all_done_clicked)
 		self.selection.connect("changed", controller.on_tree_selection_changed)
+		self.cancel_add_task_button.connect('clicked', controller.on_cancel_add_task_button_clicked)
 
 
 	#metodo con el que mostramos las dos cajas del fondo

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-13 23:15+0200\n"
+"POT-Creation-Date: 2017-10-13 23:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgstr ""
 msgid "El nombre de la tarea no puede estar vacío"
 msgstr ""
 
-#: p1_mod.py:138 p1_mod.py:352
+#: p1_mod.py:138 p1_mod.py:361
 msgid "Hecho"
 msgstr ""
 
@@ -62,46 +62,46 @@ msgstr ""
 msgid "Error sincronizando"
 msgstr ""
 
-#: p1_mod.py:291
+#: p1_mod.py:300
 msgid "Práctica 1 "
 msgstr ""
 
-#: p1_mod.py:291
+#: p1_mod.py:300
 msgid " IPM 17/18"
 msgstr ""
 
-#: p1_mod.py:330
+#: p1_mod.py:339
 msgid "Tarea"
 msgstr ""
 
-#: p1_mod.py:342 p1_mod.py:401
+#: p1_mod.py:351 p1_mod.py:410
 msgid "Fecha"
 msgstr ""
 
-#: p1_mod.py:372
+#: p1_mod.py:381
 msgid "Borrar todas las tareas"
 msgstr ""
 
-#: p1_mod.py:374
+#: p1_mod.py:383
 msgid "Borrar todas las tareas hechas"
 msgstr ""
 
-#: p1_mod.py:399
+#: p1_mod.py:408
 msgid "Nombre"
 msgstr ""
 
-#: p1_mod.py:542
+#: p1_mod.py:554
 msgid "¡Atención!"
 msgstr ""
 
-#: p1_mod.py:549
+#: p1_mod.py:561
 msgid "¿Quieres cerrar la aplicación?"
 msgstr ""
 
-#: p1_mod.py:550
+#: p1_mod.py:562
 msgid "Si no se cancela, la aplicación se cerrará"
 msgstr ""
 
-#: p1_mod.py:658
+#: p1_mod.py:670
 msgid "¡No se puede conectar con el servidor!"
 msgstr ""
