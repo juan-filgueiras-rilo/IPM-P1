@@ -35,8 +35,7 @@ _ = gettext.gettext
 
 
 _DATE_FORMAT = _("%d/%m/%y")
-#Cabecera
-#Notificaciones
+
 '''
 Controlador
 '''
@@ -61,19 +60,13 @@ class TaskList_Controller:
 		self._view.run_dialog_add()
 
 	def on_button_remove_clicked(self, widget):
-		# task = self._view.get_task()
-		# if task != None:
-		# 	ok = self._model.remove(task[0])
-		# 	if ok != -1:
-		# 		self._view.remove(task[0])
 		tasklist = self._view.get_tasks()
 		for i in range (len(tasklist)):
 			if (tasklist[i] != None):
 				ok = self._model.remove(tasklist[i][0])
 				if (ok != -1):
 					self._view.remove(tasklist[i][0])
-
-
+					self._view.remove_selection()
 
 	def on_button_exit_clicked(self, widget, event):
 		signal = self._view.exit(widget.get_toplevel())
@@ -92,7 +85,6 @@ class TaskList_Controller:
 			self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
 					_("La fecha introducida tiene que ser posterior a la fecha actual"))
 		else:
-			#task = self._view.get_task()
 			task = self._view.get_tasks()[0]
 			if (task != None):
 				task = list(task)
@@ -110,20 +102,20 @@ class TaskList_Controller:
 		#si todo ok, lo editamos en la vista tambien
 		#si el string pasado por el usuario no es valido, ya no se hace nada mas
 		tasklist = self._view.get_tasks()
-		if not (self._model.validate_taskname(text)):
-			self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
-				_("El nombre de la tarea no puede estar vacío"))
-		else:
-			#task = self._view.get_task()
-			task = self._view.get_tasks()[0]
-			if (task != None):
-				task = list(task)
-				task[1] = text
-				task = tuple(task)
-				data = (task[1], task[2], task[3])
-				ok = self._model.edit(task[0], data)
-				if ok != -1:
-					self._view.edit(task[0], data)
+		if ((len(tasklist)) != 0):
+			if not (self._model.validate_taskname(text)):
+				self._view.run_dialog_provided_data_error(_("ERROR CRÍTICO"),
+					_("El nombre de la tarea no puede estar vacío"))
+			else:
+				task = self._view.get_tasks()[0]
+				if (task != None):
+					task = list(task)
+					task[1] = text
+					task = tuple(task)
+					data = (task[1], task[2], task[3])
+					ok = self._model.edit(task[0], data)
+					if ok != -1:
+						self._view.edit(task[0], data)
 
 	#metodo que se lanza al seleccionar la columna hecho        
 	def on_row_selected(self, widget, position, n_column):
@@ -139,9 +131,7 @@ class TaskList_Controller:
 			data = (task[1], task[2], task[3])
 			ok = self._model.edit(task[0], data)
 			if ok != -1:
-				self._view.edit(task[0], data)
-		else:
-			self._view.update_delete(True)
+				self._view.edit(task[0], data)			
 
 	#metodo que se lanza al añadir una nueva tarea
 	def on_button_add_task_clicked(self, widget):
@@ -175,7 +165,7 @@ class TaskList_Controller:
 		prev_status = self._view._sync_label.get_text()
 		state = {'spinner_running' : True,
 				'sync_button' : False,
-				'sync_status' : _("Sincronizando...\t\t\t\t\t\t")}
+				'sync_status' : _("Sincronizando...")}
 		self._view.update_state(state)
 		t = threading.Thread(target = self.sync, args = (prev_status, ))
 		t.start()
@@ -187,7 +177,7 @@ class TaskList_Controller:
 					'sync_button' : True,
 					'sync_status' : _("Última sincronización: ") + time.strftime("%H:%M")}
 		else:
-			state =  {'spinner_running' : False,
+			state = {'spinner_running' : False,
 					'sync_button' : True,
 					'sync_status' : prev_status,
 					'show_sync_error' : _("Error sincronizando")}
@@ -218,13 +208,8 @@ class TaskList_Controller:
 		if ((eventkey.get_keyval()[1] == 65535)):
 			self.on_button_remove_clicked(entry)
 
-
-	def on_focus_out_treeview(self, uno, dos):
-		# print("Hola") 
-		# print(uno)
-		# print(dos)
-		self._view.update_delete(False)
-
+	def on_tree_selection_changed(self, widget):
+		self._view.update_delete(True)
 		
 '''
 Vista
@@ -244,7 +229,7 @@ class TaskList_View:
 				return 1
 			return 0
 			
-		self._win = Gtk.Window(title=_("Práctica 1 -- IPM 17/18"))
+		self._win = Gtk.Window()
 		# El código sigue los ejemplos del tuto: https://python-gtk-3-tutorial.readthedocs.io/en/latest/index.html
 		hb = Gtk.HeaderBar()
 		hb.set_show_close_button(True)
@@ -289,29 +274,27 @@ class TaskList_View:
 
 		self._win.add(box)
 		self.store = Gtk.ListStore(int, str, GObject.TYPE_PYOBJECT, bool)
-		self.store
-		self.store.append([100,"Llevar coche al taller", date.today(), False])
-		self.store.append([101,"Lavar el coche", date(2017, 8, 1), False])
-		self.store.append([102,"Pagar el seguro", date(2017,1,1), False])
-		self.store.append([103,"Arreglar mando garaje", date.today(), False])
-		self.store.append([104,"Recoger ropa del tinte", date.today(), False])
-		self.store.append([105,"Regalo cumpleaños Nico", date(2018,1,1), False])
-		self.store.append([106,"Devolver libro a la biblioteca", date(2018,2,12), True])
-		self.store.append([107,"Ordenar el congelador", date(2017,9,17), False])
-		self.store.append([108,"Lavar las cortinas", date(2017,10,1), False])
-		self.store.append([109,"Organizar el cajón de los mandos", date(2017,10,5), False])
-		self.store.append([110,"Poner flores en las jardineras", date.today(), False])
-
+		self.store.append([100,"Llevar coche al taller", datetime.today(), False])
+		self.store.append([101,"Lavar el coche", datetime.today(), False])
+		self.store.append([102,"Pagar el seguro", datetime.today(), False])
+		self.store.append([103,"Arreglar mando garaje", datetime.today(), False])
+		self.store.append([104,"Recoger ropa del tinte", datetime.today(), False])
+		self.store.append([105,"Regalo cumpleaños Nico", datetime.today(), False])
+		self.store.append([106,"Devolver libro a la biblioteca", datetime.today(), True])
+		self.store.append([107,"Ordenar el congelador", datetime.today(), False])
+		self.store.append([108,"Lavar las cortinas", datetime.today(), False])
+		self.store.append([109,"Organizar el cajón de los mandos", datetime.today(), False])
+		self.store.append([110,"Poner flores en las jardineras", datetime.today(), False])
 		#se crea un treeview sobre la lista store
 		self.tree = Gtk.TreeView(self.store)
 		#activamos que la activación de una fila se produzca en un simple click en vez 
 		#de doble click
 		self.tree.set_activate_on_single_click(True)
-
+		self.selection = self.tree.get_selection()
 
 		#seleccion multiple
 		self.tree.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE)
-		
+		self.tree.set_rubber_banding(True)
 		#diferenciamos entre el renderer del nombre y de la fecha pq a la hora de editar
 		#seran eventos diferentes
 		self.renderer_name = Gtk.CellRendererText()
@@ -350,8 +333,6 @@ class TaskList_View:
 		#self.tree.set_headers_visible(False)
 		box.pack_end(self.tree, True, True, 0)
 		column.set_sort_column_id(3)
-
-
 
 		#
 		# #
@@ -417,6 +398,7 @@ class TaskList_View:
 		self.tareaEntry.connect('changed', controller.on_tarea_entry_changed)
 		self.fechaEntry.connect('changed', controller.on_fecha_entry_changed)
 		self.tree.connect('key-press-event', controller.on_supr_pressed)
+		self.selection.connect("changed", controller.on_tree_selection_changed)
 		#self.tree.connect('focus', controller.on_focus_activated)
 		#self.tree.connect('focus-out-event', controller.on_focus_out_treeview)
 
@@ -425,8 +407,6 @@ class TaskList_View:
 	def run_dialog_add(self):
 		self.hbox1.show_all()
 		self.hbox2.show_all()
-		
-	
 
 	def get_name_buffer_has_text(self):
 		return self.name_buffer_has_text
@@ -437,10 +417,6 @@ class TaskList_View:
 	#metodo con el que añadimos la tarea a la vista y al modelo
 	def run_dialog_add_prueba(self):
 		data = (self.tareaEntry.get_text(), self.fechaEntry.get_text(),False)
-		# self.tareaEntry.set_text("")
-		# self.fechaEntry.set_text("")
-		# self.hbox1.hide()
-		# self.hbox2.hide()
 		return data
 		
 	def run_dialog_provided_data_error(self, title, secondary_text):
@@ -518,11 +494,13 @@ class TaskList_View:
 
 	def update_name_buffer(self, active):
 		self.name_buffer_has_text = active
-		self.update_add_task(self.get_name_buffer_has_text() & self.get_date_buffer_has_text())
+		self.update_add_task(self.get_name_buffer_has_text() 
+							& self.get_date_buffer_has_text())
 
 	def update_date_buffer(self, active):
 		self.date_buffer_has_text = active
-		self.update_add_task(self.get_name_buffer_has_text() & self.get_date_buffer_has_text())
+		self.update_add_task(self.get_name_buffer_has_text() 
+							& self.get_date_buffer_has_text())
 
 
 	def update_add(self, active):
@@ -567,7 +545,12 @@ class TaskList_View:
 		self.fechaEntry.set_text("")
 		self.hbox1.hide()
 		self.hbox2.hide()		
+	
+	def remove_selection(self):
+		self.tree.get_selection().unselect_all()
+		self.update_delete(False)
 		
+
 '''
 Modelo
 '''
@@ -577,17 +560,17 @@ class TaskList_Model:
 	def __init__(self):
 		self.ID = 0
 		self.model_task_list = []
-		self.model_task_list.append([100,"Llevar coche al taller", date.today(), False])
-		self.model_task_list.append([101,"Lavar el coche", date(2017, 8, 1), False])
-		self.model_task_list.append([102,"Pagar el seguro", date(2017,1,1), False])
-		self.model_task_list.append([103,"Arreglar mando garaje", date.today(), False])
-		self.model_task_list.append([104,"Recoger ropa del tinte", date.today(), False])
-		self.model_task_list.append([105,"Regalo cumpleaños Nico", date(2018,1,1), False])
-		self.model_task_list.append([106,"Devolver libro a la biblioteca", date(2018,2,12), True])
-		self.model_task_list.append([107,"Ordenar el congelador", date(2017,9,12), False])
-		self.model_task_list.append([108,"Lavar las cortinas", date(2017,10,1), False])
-		self.model_task_list.append([109,"Organizar el cajón de los mandos", date(2017,10,5), False])
-		self.model_task_list.append([110,"Poner flores en las jardineras", date.today(), False])
+		self.model_task_list.append([100,"Llevar coche al taller", datetime.today(), False])
+		self.model_task_list.append([101,"Lavar el coche", datetime.today(), False])
+		self.model_task_list.append([102,"Pagar el seguro", datetime.today(), False])
+		self.model_task_list.append([103,"Arreglar mando garaje", datetime.today(), False])
+		self.model_task_list.append([104,"Recoger ropa del tinte", datetime.today(), False])
+		self.model_task_list.append([105,"Regalo cumpleaños Nico", datetime.today(), False])
+		self.model_task_list.append([106,"Devolver libro a la biblioteca", datetime.today(), True])
+		self.model_task_list.append([107,"Ordenar el congelador", datetime.today(), False])
+		self.model_task_list.append([108,"Lavar las cortinas", datetime.today(), False])
+		self.model_task_list.append([109,"Organizar el cajón de los mandos", datetime.today(), False])
+		self.model_task_list.append([110,"Poner flores en las jardineras", datetime.today(), False])
 
 	#
 	##   add asigna un ID de tarea único a la lista de 
@@ -626,7 +609,6 @@ class TaskList_Model:
 		return done
 
 	def sync(self):
-
 		def get_random():
 			i = randint(1,100)
 			return i
@@ -666,7 +648,7 @@ class TaskList_Model:
 			try:
 				date = (datetime.strptime(string_to_convert, _DATE_FORMAT))
 			except Exception:
-				return (None,"bad-format")
+			 	return (None,"bad-format")
 			validate = self.validate_taskdate(date)
 			if not (validate):
 				return (None, "prior-date")
